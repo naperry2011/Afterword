@@ -72,19 +72,26 @@ class Repository {
 
   // ---- Sessions ----------------------------------------------------------
 
+  /// One joined query so drift re-emits when the session, its book, or any of
+  /// its reflections change. Watching the session row alone missed new
+  /// reflections, which left the Card showing "No card yet".
   Stream<SessionDetail?> watchSession(String sessionId) {
-    final sessionQ = db.select(db.readingSessions)
-      ..where((s) => s.id.equals(sessionId));
-    final reflQ = db.select(db.reflections)
-      ..where((r) => r.sessionId.equals(sessionId))
-      ..orderBy([(r) => OrderingTerm.asc(r.created)]);
+    final q = db.select(db.readingSessions).join([
+      innerJoin(db.books, db.books.id.equalsExp(db.readingSessions.bookId)),
+      leftOuterJoin(db.reflections,
+          db.reflections.sessionId.equalsExp(db.readingSessions.id)),
+    ])
+      ..where(db.readingSessions.id.equals(sessionId))
+      ..orderBy([OrderingTerm.asc(db.reflections.created)]);
 
-    return sessionQ.watchSingleOrNull().asyncMap((session) async {
-      if (session == null) return null;
-      final book = await (db.select(db.books)
-            ..where((b) => b.id.equals(session.bookId)))
-          .getSingle();
-      final reflections = await reflQ.get();
+    return q.watch().map((rows) {
+      if (rows.isEmpty) return null;
+      final session = rows.first.readTable(db.readingSessions);
+      final book = rows.first.readTable(db.books);
+      final reflections = rows
+          .map((r) => r.readTableOrNull(db.reflections))
+          .whereType<Reflection>()
+          .toList();
       return SessionDetail(
           session: session, book: book, reflections: reflections);
     });
