@@ -16,9 +16,9 @@ A private, reflection-first reading journal with shareable recommendation cards.
 | Date | Milestone |
 |---|---|
 | Sept 10 | Polish pass: no placeholders, no default icon, every empty state designed, no unreleased-feature copy in the binary |
-| Sept 11 | QA on a real device: airplane mode, small screen, largest dynamic type, fresh install, upgrade over previous build |
+| Sept 11 | QA on both simulators in release mode: airplane mode, small screen, largest dynamic type, fresh install, upgrade over previous build |
 | Sept 12 | Store metadata: icon, screenshots, privacy URL live, support URL live, description, keywords, App Privacy |
-| Sept 13 | Signed release build in App Store Connect, installed via TestFlight on a device that never had a debug build |
+| Sept 13 | Signed release build in App Store Connect, installed via TestFlight by an external tester |
 | **Sept 14** | **Submit** |
 | Sept 15–16 | Answer any rejection same day. Blocking fixes only |
 | Sept 17 | Live |
@@ -51,7 +51,7 @@ flutter run -d "iPhone 17 Pro"      # simulators: "iPhone 17 Pro", "iPhone 16e" 
 flutter build ios --release          # Sept 13
 ```
 
-Real device: plug the iPhone in by cable with Developer Mode on; wireless discovery is flaky here.
+No physical iPhone is available (2026-09-13). QA runs on the simulators in release mode; TestFlight external testers are the real-device check.
 
 ## Layout
 
