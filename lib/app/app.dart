@@ -15,6 +15,17 @@ class AfterwordApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       theme: buildTheme(),
       routerConfig: router,
+      // Honour Dynamic Type up to a point. Past 1.6x the pixel display face
+      // stops fitting the screens we designed; body copy stays readable.
+      builder: (context, child) {
+        final mq = MediaQuery.of(context);
+        return MediaQuery(
+          data: mq.copyWith(
+            textScaler: mq.textScaler.clamp(maxScaleFactor: 1.6),
+          ),
+          child: child!,
+        );
+      },
     );
   }
 }

@@ -110,7 +110,14 @@ class _CardScreenState extends ConsumerState<CardScreen> {
                     child: FittedBox(
                       child: RepaintBoundary(
                         key: _boundary,
-                        child: _RecommendationCard(detail: d, who: who.response),
+                        // The card is a fixed-size image. It ignores Dynamic
+                        // Type so the PNG is identical on every device.
+                        child: MediaQuery(
+                          data: MediaQuery.of(context)
+                              .copyWith(textScaler: TextScaler.noScaling),
+                          child: _RecommendationCard(
+                              detail: d, who: who.response),
+                        ),
                       ),
                     ),
                   ),

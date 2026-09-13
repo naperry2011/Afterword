@@ -68,13 +68,32 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   QuietButton(label: 'Skip', onPressed: _done),
                 ],
               ),
-              const Spacer(),
-              const SizedBox(width: 72, height: 108, child: DitherFill()),
-              const SizedBox(height: 28),
-              Text(title, style: pix(size: 32, weight: FontWeight.w600)),
-              const SizedBox(height: 14),
-              Text(text, style: body(size: 17.5, color: Tokens.dim)),
-              const Spacer(flex: 2),
+              // Scrolls at large Dynamic Type instead of overflowing; sits
+              // low on the screen otherwise.
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (context, c) => SingleChildScrollView(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(minHeight: c.maxHeight),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(
+                              width: 72, height: 108, child: DitherFill()),
+                          const SizedBox(height: 28),
+                          Text(title,
+                              style: pix(size: 32, weight: FontWeight.w600)),
+                          const SizedBox(height: 14),
+                          Text(text,
+                              style: body(size: 17.5, color: Tokens.dim)),
+                          const SizedBox(height: 24),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
               PixelButton(
                 label: last ? 'Start tonight' : 'Next',
                 expand: true,

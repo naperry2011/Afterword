@@ -3,9 +3,10 @@ import 'package:flutter/foundation.dart';
 import 'database.dart';
 import 'repository.dart';
 
-/// Debug-only dummy data so the shelf has something to show while building.
-/// Flip to false (or delete this file) during the Sept 10 polish pass.
-const bool kSeedDummyData = true;
+/// Debug-only dummy data for screenshots and development. Off by default.
+/// Opt in with `flutter run --dart-define=AFTERWORD_SEED=true`. Release
+/// builds ignore it entirely (see the kDebugMode guard below).
+const bool kSeedDummyData = bool.fromEnvironment('AFTERWORD_SEED');
 
 const _metaKey = 'seed.v1.applied';
 

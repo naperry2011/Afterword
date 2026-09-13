@@ -83,12 +83,15 @@ class _ReflectScreenState extends ConsumerState<ReflectScreen> {
                 children: [
                   Row(
                     children: [
-                      Text(
-                        '${_index + 1} OF ${prompts.length}'
-                        '${prompt.optional ? ' · OPTIONAL' : ''}',
-                        style: pix(size: 13, color: Tokens.rose),
+                      Expanded(
+                        child: Text(
+                          '${_index + 1} OF ${prompts.length}'
+                          '${prompt.optional ? ' · OPTIONAL' : ''}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: pix(size: 13, color: Tokens.rose),
+                        ),
                       ),
-                      const Spacer(),
                       QuietButton(
                         label: 'Close',
                         onPressed: () => context.pop(),
@@ -96,38 +99,49 @@ class _ReflectScreenState extends ConsumerState<ReflectScreen> {
                     ],
                   ),
                   const SizedBox(height: 18),
-                  Text(
-                    d.book.title,
-                    style: body(size: 15, color: Tokens.dim),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    prompt.title,
-                    style: pix(
-                      size: 30,
-                      weight: FontWeight.w600,
-                      color: titleColor,
-                    ),
-                  ),
-                  const SizedBox(height: 22),
+                  // Scrolls at large Dynamic Type. Skip and Next stay pinned
+                  // below so Skip is always visible.
                   Expanded(
-                    child: TextField(
-                      key: ValueKey(prompt.key),
-                      controller: controller,
-                      autofocus: true,
-                      maxLines: null,
-                      expands: true,
-                      textAlignVertical: TextAlignVertical.top,
-                      style: body(size: 18),
-                      decoration: const InputDecoration(hintText: ''),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            d.book.title,
+                            style: body(size: 15, color: Tokens.dim),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            prompt.title,
+                            style: pix(
+                              size: 30,
+                              weight: FontWeight.w600,
+                              color: titleColor,
+                            ),
+                          ),
+                          const SizedBox(height: 22),
+                          TextField(
+                            key: ValueKey(prompt.key),
+                            controller: controller,
+                            autofocus: true,
+                            minLines: 5,
+                            maxLines: null,
+                            textAlignVertical: TextAlignVertical.top,
+                            style: body(size: 18),
+                            decoration: const InputDecoration(hintText: ''),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(prompt.example,
+                              style: body(
+                                  size: 15,
+                                  color: Tokens.dim,
+                                  style: FontStyle.italic)),
+                        ],
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  Text(prompt.example,
-                      style: body(size: 15, color: Tokens.dim,
-                          style: FontStyle.italic)),
                   const SizedBox(height: 18),
                   Row(
                     children: [

@@ -27,12 +27,18 @@ class BookCover extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fallback = _TypographicCover(
-      bookId: bookId,
-      title: title,
-      author: author,
-      width: width,
-      height: height,
+    // A cover is an image: it ignores Dynamic Type so it never overflows its
+    // own frame, and it renders identically inside the share card.
+    final fallback = MediaQuery(
+      data: MediaQuery.of(context)
+          .copyWith(textScaler: TextScaler.noScaling),
+      child: _TypographicCover(
+        bookId: bookId,
+        title: title,
+        author: author,
+        width: width,
+        height: height,
+      ),
     );
     final url = coverUrl;
     return Container(
