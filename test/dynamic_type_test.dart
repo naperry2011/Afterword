@@ -47,7 +47,7 @@ void main() {
     await settle(tester);
     await tester.tap(find.text('Start tonight'));
     await settle(tester);
-    expect(tester.takeException(), isNull, reason: 'onboarding overflowed');
+    _expectNoOverflow(tester, 'onboarding');
 
     // Shelf, Settings, Add.
     expect(find.text('Piranesi'), findsWidgets);
@@ -64,7 +64,7 @@ void main() {
     expect(find.text('Put it on the shelf'), findsOneWidget);
     await tester.pageBack();
     await settle(tester);
-    expect(tester.takeException(), isNull, reason: 'shelf/settings/add overflowed');
+    _expectNoOverflow(tester, 'shelf/settings/add');
 
     // Book → Reflect → Card.
     await tester.tap(find.text('Piranesi').last);
@@ -81,8 +81,19 @@ void main() {
     await settle(tester);
     await settle(tester);
     expect(find.text('Send it'), findsOneWidget);
-    expect(tester.takeException(), isNull, reason: 'book/reflect/card overflowed');
+    _expectNoOverflow(tester, 'book/reflect/card');
 
     await tearDownApp(tester, db);
   });
+}
+
+/// Fails with the full Flutter diagnostics (including the widget creator
+/// chain) so an overflow points at the file that caused it.
+void _expectNoOverflow(WidgetTester tester, String where) {
+  final e = tester.takeException();
+  if (e == null) return;
+  final text = e is FlutterError
+      ? e.diagnostics.map((d) => d.toStringDeep()).join('\n')
+      : e.toString();
+  fail('$where overflowed:\n$text');
 }

@@ -28,13 +28,19 @@ const _finished = [
 /// Debug-only start route for screenshots. Pass it as
 /// `--dart-define=AFTERWORD_START=card:finished` (an environment variable of
 /// the same name also works where the launcher passes one through).
-/// Forms: `shelf`, `book:reading`, `book:finished`, `reflect:finished`,
+/// Forms: `onboarding:0..2`, `shelf`, `book:reading`, `book:finished`, `reflect:finished`,
 /// `card:finished`. Ignored outside debug builds.
 Future<String?> debugStartRoute(Repository repo) async {
   if (!kDebugMode) return null;
   const fromDefine = String.fromEnvironment('AFTERWORD_START');
   final spec = Platform.environment['AFTERWORD_START'] ?? fromDefine;
-  if (spec.isEmpty || spec == 'shelf') return null;
+  if (spec.isEmpty) return null;
+  if (spec.startsWith('onboarding:')) {
+    return '/onboarding?page=${spec.split(':')[1]}';
+  }
+  // Any other start route implies a returning user.
+  await repo.setMeta('onboarding.seen', 'true');
+  if (spec == 'shelf') return null;
   final parts = spec.split(':');
   if (parts.length != 2) return null;
   final shelf = await repo.watchShelf().first;

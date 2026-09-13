@@ -5,12 +5,13 @@ import 'package:go_router/go_router.dart';
 import '../data/providers.dart';
 import '../theme/text.dart';
 import '../theme/tokens.dart';
-import '../widgets/dither_fill.dart';
+import '../widgets/onboarding_art.dart';
 import '../widgets/pixel_button.dart';
 
 /// Three screens, no more. Copy is a first pass; polish on Sept 10.
 class OnboardingScreen extends ConsumerStatefulWidget {
-  const OnboardingScreen({super.key});
+  const OnboardingScreen({super.key, this.initialPage = 0});
+  final int initialPage;
 
   @override
   ConsumerState<OnboardingScreen> createState() => _OnboardingScreenState();
@@ -32,7 +33,9 @@ const _pages = [
 ];
 
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
-  int _index = 0;
+  late int _index = widget.initialPage.clamp(0, _pages.length - 1);
+
+  static const _art = [MiniShelf(), MiniPrompts(), MiniCard()];
 
   Future<void> _done() async {
     await ref.read(repositoryProvider).setMeta(onboardingSeenKey, 'true');
@@ -79,9 +82,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const SizedBox(
-                              width: 72, height: 108, child: DitherFill()),
-                          const SizedBox(height: 28),
+                          _art[_index],
+                          const SizedBox(height: 32),
                           Text(title,
                               style: pix(size: 32, weight: FontWeight.w600)),
                           const SizedBox(height: 14),

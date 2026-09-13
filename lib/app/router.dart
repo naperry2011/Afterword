@@ -52,7 +52,12 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(path: 'settings', builder: (_, _) => const SettingsScreen()),
         ],
       ),
-      GoRoute(path: '/onboarding', builder: (_, _) => const OnboardingScreen()),
+      GoRoute(
+        path: '/onboarding',
+        builder: (_, s) => OnboardingScreen(
+          initialPage: int.tryParse(s.uri.queryParameters['page'] ?? '') ?? 0,
+        ),
+      ),
     ],
   );
 });

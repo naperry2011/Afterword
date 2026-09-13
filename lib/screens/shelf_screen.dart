@@ -8,7 +8,9 @@ import '../data/repository.dart';
 import '../theme/text.dart';
 import '../theme/tokens.dart';
 import '../widgets/dashed_rule.dart';
+import '../data/prompts.dart';
 import '../widgets/pixel_button.dart';
+import '../widgets/pixel_panel.dart';
 import '../widgets/spine.dart';
 
 /// The home screen. Spines, then the empty slot. The empty slot is the pull.
@@ -76,7 +78,7 @@ class _ShelfBody extends StatelessWidget {
           ),
         ),
         if (entries.isEmpty) ...[
-          const SizedBox(height: 22),
+          const SizedBox(height: 18),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),
             child: Text(
@@ -84,6 +86,14 @@ class _ShelfBody extends StatelessWidget {
               textAlign: TextAlign.center,
               style: body(size: 16, color: Tokens.dim),
             ),
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24),
+            child: DashedRule(margin: EdgeInsets.symmetric(vertical: 28)),
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24),
+            child: _WhenYouFinish(),
           ),
         ] else ...[
           const Padding(
@@ -98,8 +108,9 @@ class _ShelfBody extends StatelessWidget {
   }
 
   String _countLine(int finished, int reading) {
+    if (finished == 0 && reading == 0) return 'YOUR FIRST SLOT IS WAITING';
     final parts = <String>[
-      '${_word(finished)} FINISHED',
+      if (finished > 0) '${_word(finished)} FINISHED',
       if (reading > 0) '${_word(reading)} IN PROGRESS',
       'ONE WAITING',
     ];
@@ -164,7 +175,12 @@ class _ShelfRow extends StatelessWidget {
             child: ListView(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 24),
+              // An empty shelf shows its one slot in the middle of the plank,
+              // not tucked in a corner.
               children: [
+                if (finished.isEmpty && reading.isEmpty && abandoned.isEmpty)
+                  SizedBox(
+                      width: (MediaQuery.sizeOf(context).width - 48 - 26) / 2),
                 for (final e in finished.reversed) ...[
                   Align(
                     alignment: Alignment.bottomCenter,
@@ -214,6 +230,40 @@ class _ShelfRow extends StatelessWidget {
               ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Previews the finishing prompts so a new person knows what the shelf is
+/// for before they have finished anything.
+class _WhenYouFinish extends StatelessWidget {
+  const _WhenYouFinish();
+
+  @override
+  Widget build(BuildContext context) {
+    final prompts = promptsFor(SessionStatus.finished);
+    return PixelPanel(
+      shadow: false,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('WHEN YOU FINISH ONE', style: pix(size: 12, color: Tokens.rose)),
+          const SizedBox(height: 6),
+          Text('Three questions, under two minutes, all skippable. '
+              'Your answer to the second one becomes a card you can send.',
+              style: body(size: 15, color: Tokens.dim)),
+          const SizedBox(height: 12),
+          for (final p in prompts)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Text(p.title,
+                  style: body(
+                      size: 15.5,
+                      weight: FontWeight.w600,
+                      color: p.optional ? Tokens.dim : Tokens.cream)),
+            ),
         ],
       ),
     );
