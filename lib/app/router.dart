@@ -10,11 +10,14 @@ import '../screens/reflect_screen.dart';
 import '../screens/settings_screen.dart';
 import '../screens/shelf_screen.dart';
 
+/// Overridden in main for debug screenshot runs. Always '/' in release.
+final initialLocationProvider = Provider<String>((_) => '/');
+
 /// Four surfaces. Shelf → Book → Reflect → Card, plus Add and Settings.
 final routerProvider = Provider<GoRouter>((ref) {
   final seen = ref.watch(onboardingSeenProvider);
   return GoRouter(
-    initialLocation: '/',
+    initialLocation: ref.watch(initialLocationProvider),
     redirect: (context, state) {
       final done = seen.asData?.value;
       if (done == null) return null; // still loading, stay put

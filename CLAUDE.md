@@ -47,9 +47,17 @@ flutter pub get
 dart run build_runner build --delete-conflicting-outputs   # after editing database.dart
 flutter analyze
 flutter test
-flutter run -d "iPhone 17 Pro"      # simulators: "iPhone 17 Pro", "iPhone 16e" (small-screen QA)
-flutter build ios --release          # Sept 13
+flutter run -d "iPhone 17 Pro"      # simulators: "iPhone 17 Pro", "iPhone 16e" (small-screen QA), "iPhone 17 Pro Max" (6.9" store shots)
+flutter build ios --release --no-codesign   # release compile check, no device needed
+flutter build ipa                    # Sept 13 archive for App Store Connect
+
+# Screenshot harness, debug builds only. Seed data is off unless asked for.
+flutter build ios --simulator --debug --dart-define=AFTERWORD_SEED=true --dart-define=AFTERWORD_START=card:finished
+# AFTERWORD_START: shelf | book:reading | book:finished | reflect:finished | card:finished
+# Then: xcrun simctl install <udid> build/ios/iphonesimulator/Runner.app && xcrun simctl launch <udid> com.nickperry.afterword
 ```
+
+Store screenshots live in `docs/store/screenshots-6.9in/`. Privacy and support pages are `docs/site/privacy.html` and `docs/site/support.html`; they must be published at a live URL before submission.
 
 No physical iPhone is available (2026-09-13). QA runs on the simulators in release mode; TestFlight external testers are the real-device check.
 
@@ -90,9 +98,10 @@ test/                  drift repository tests (in-memory), app smoke test
 
 **Never cut:** the reflection prompts, the share card, the shelf.
 
-## Before the Sept 10 polish pass
+## Polish pass status (done 2026-09-13)
 
-- Set `kSeedDummyData = false` in `lib/data/seed.dart` (or delete the file and its call in `main.dart`).
-- Replace the default launcher icon.
-- Rewrite onboarding copy in `lib/screens/onboarding_screen.dart`.
-- Test the reflect flow on three real people with a book they actually finished.
+- Seed data is opt-in (`--dart-define=AFTERWORD_SEED=true`) and ignored in release. Done.
+- Launcher icon is the pixel lamp. Done.
+- Dynamic Type clamps at 1.6x; `test/dynamic_type_test.dart` guards every surface at 3x on a 16e viewport.
+- iPhone only, portrait only, dark launch screen.
+- Still open: test the reflect flow on three real people via TestFlight, and publish the privacy and support pages.
