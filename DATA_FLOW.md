@@ -1,6 +1,6 @@
 # DATA_FLOW
 
-Generated: 2026-09-08 | commit 723a953 | by /code-map
+Generated: 2026-09-13 | commit 2b07e5d | by /code-map
 
 All storage is on device. No network call other than Open Library search and cover fetches.
 
@@ -70,8 +70,16 @@ Downstream Consumers: shelfProvider stream
 
 ## App Flags
 
-Source: OnboardingScreen, seed.dart
+Source: OnboardingScreen, seed.dart (seed guard, debug start route marks onboarding seen)
 Transport: `Repository.setMeta` / `getMeta`
 Processor: none
 Storage: app_meta key/value table
 Downstream Consumers: onboardingSeenProvider → router redirect; seed guard
+
+## Site Publish
+
+Source: docs/site/ on main
+Transport: GitHub Actions (.github/workflows/pages.yml)
+Processor: upload-pages-artifact, deploy-pages
+Storage: GitHub Pages
+Downstream Consumers: App Store listing (privacy and support URLs), landing page visitors

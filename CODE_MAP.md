@@ -1,6 +1,6 @@
 # CODE_MAP
 
-Generated: 2026-09-08 | commit 723a953 | by /code-map
+Generated: 2026-09-13 | commit 2b07e5d | by /code-map
 
 Flutter app, iOS first. Single package, no backend. All source under `lib/`.
 
@@ -9,15 +9,13 @@ Flutter app, iOS first. Single package, no backend. All source under `lib/`.
 Category: UI
 
 Primary Files:
-* lib/main.dart
-* lib/app/app.dart
-* lib/app/router.dart
+* lib/main.dart (seed, debug start route, provider container)
+* lib/app/app.dart (MaterialApp.router, Dynamic Type clamp at 1.6x)
+* lib/app/router.dart (routes, onboarding redirect, initialLocationProvider)
 
 Supporting Files:
 * lib/data/providers.dart (routerProvider reads onboardingSeenProvider)
-
-External Integrations:
-* none
+* lib/data/seed.dart (`debugStartRoute`, debug-only screenshot harness)
 
 Entry Points:
 * `main()` in lib/main.dart
@@ -38,11 +36,9 @@ Supporting Files:
 * lib/widgets/dashed_rule.dart
 * lib/widgets/dither_fill.dart
 * lib/widgets/empty_state.dart
+* lib/widgets/onboarding_art.dart (MiniShelf, MiniPrompts, MiniCard)
 * assets/fonts/ (Pixelify Sans, Nunito, OFL licences)
 * pubspec.yaml (font declarations)
-
-External Integrations:
-* none
 
 ## Persistence
 
@@ -55,7 +51,7 @@ Primary Files:
 
 Supporting Files:
 * lib/data/ids.dart (`newId()`)
-* lib/data/seed.dart (debug-only dummy data, `kSeedDummyData`)
+* lib/data/seed.dart (opt-in dummy data via `--dart-define=AFTERWORD_SEED`, debug start route via `AFTERWORD_START`)
 * lib/data/providers.dart (databaseProvider, repositoryProvider, shelfProvider, sessionProvider)
 
 External Integrations:
@@ -81,10 +77,11 @@ External Integrations:
 Category: Page
 
 Primary Files:
-* lib/screens/shelf_screen.dart
+* lib/screens/shelf_screen.dart (shelf row, count line, empty state with prompt preview)
 
 Supporting Files:
 * lib/widgets/spine.dart (SolidSpine, ProgressSpine, EmptySlot, `spineGeometry`)
+* lib/data/prompts.dart (empty-state preview)
 * lib/data/repository.dart (`watchShelf`)
 
 Entry Points:
@@ -173,38 +170,49 @@ Entry Points:
 Category: Page
 
 Primary Files:
-* lib/screens/onboarding_screen.dart
+* lib/screens/onboarding_screen.dart (three pages, `initialPage` from `?page=`)
 
 Supporting Files:
+* lib/widgets/onboarding_art.dart
 * lib/data/providers.dart (onboardingSeenProvider, `onboardingSeenKey`)
 * lib/data/repository.dart (`getMeta`, `setMeta`)
 
 Entry Points:
 * route `/onboarding` (router redirect on fresh install)
 
-## Tests
-
-Category: Other
-
-Primary Files:
-* test/database_test.dart (repository against in-memory drift)
-* test/app_smoke_test.dart (boot to onboarding)
-
 ## Platform Projects
 
 Category: Infra
 
 Primary Files:
-* ios/ (bundle id com.nickperry.afterword, deployment target 15.0)
+* ios/ (bundle id com.nickperry.afterword, target 15.0, team PGVTN7X3HQ, iPhone only, portrait only)
+* ios/Runner/Assets.xcassets/AppIcon.appiconset/ (pixel lamp icon)
+* ios/Runner/Base.lproj/LaunchScreen.storyboard (plain room colour, no image)
 * android/ (generated, deferred)
 
-## Documentation
+## Marketing Site
+
+Category: Page
+
+Primary Files:
+* docs/site/index.html (landing page, lo-fi night)
+* docs/site/privacy.html
+* docs/site/support.html
+
+Supporting Files:
+* .github/workflows/pages.yml (deploys docs/site to GitHub Pages on push)
+
+External Integrations:
+* GitHub Pages at https://naperry2011.github.io/Afterword/
+* Google Fonts (site only; the app bundles its fonts)
+
+## Tests, Docs, Store Assets
 
 Category: Other
 
-Primary Files:
-* CLAUDE.md (stack, rules, schedule, cut order)
-* docs/afterword-build-spec.md (working spec)
-* docs/decisions.md (decision log)
-* docs/reading-log-build-plan.pdf
-* docs/design/ (landing page HTML and screenshots, web-only)
+* test/helpers.dart (`settle`, `drive`, `tearDownApp` for drift under fake async)
+* test/database_test.dart, test/app_smoke_test.dart, test/reflect_flow_test.dart, test/dynamic_type_test.dart
+* CLAUDE.md (stack, rules, schedule, cut order, harness commands)
+* docs/afterword-build-spec.md (working spec), docs/decisions.md (decision log), docs/reading-log-build-plan.pdf
+* docs/design/ (landing page source and design screenshots)
+* docs/store/screenshots-6.9in/ (1320×2868 PNGs: shelf, reflect, card, book)
