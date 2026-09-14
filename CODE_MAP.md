@@ -74,7 +74,7 @@ External Integrations:
 
 ## Shelf
 
-Category: Page
+Category: Page · route `/`
 
 Primary Files:
 * lib/screens/shelf_screen.dart (shelf row, count line, empty state with prompt preview)
@@ -84,12 +84,9 @@ Supporting Files:
 * lib/data/prompts.dart (empty-state preview)
 * lib/data/repository.dart (`watchShelf`)
 
-Entry Points:
-* route `/`
-
 ## Book Detail
 
-Category: Page
+Category: Page · route `/book/:sessionId`
 
 Primary Files:
 * lib/screens/book_screen.dart
@@ -99,12 +96,9 @@ Supporting Files:
 * lib/data/prompts.dart (labels for stored reflections)
 * lib/widgets/cover.dart
 
-Entry Points:
-* route `/book/:sessionId`
-
 ## Reflect Flow
 
-Category: Page
+Category: Page · route `/book/:sessionId/reflect` (pushed automatically by Book on finish or abandon)
 
 Primary Files:
 * lib/screens/reflect_screen.dart
@@ -113,12 +107,9 @@ Primary Files:
 Supporting Files:
 * lib/data/repository.dart (`saveReflections`, `setAbandonReason`)
 
-Entry Points:
-* route `/book/:sessionId/reflect` (pushed automatically by Book on finish or abandon)
-
 ## Share Card
 
-Category: Page
+Category: Page · route `/book/:sessionId/card`
 
 Primary Files:
 * lib/screens/card_screen.dart (`kCardSize`, RepaintBoundary capture, share)
@@ -132,12 +123,9 @@ External Integrations:
 * System share sheet via share_plus
 * Temp directory via path_provider
 
-Entry Points:
-* route `/book/:sessionId/card`
-
 ## Add Book
 
-Category: Page
+Category: Page · route `/add`
 
 Primary Files:
 * lib/screens/add_screen.dart (search, failure state, manual entry)
@@ -146,12 +134,9 @@ Supporting Files:
 * lib/data/open_library.dart
 * lib/data/repository.dart (`addBook`)
 
-Entry Points:
-* route `/add`
-
 ## Settings
 
-Category: Page
+Category: Page · route `/settings`
 
 Primary Files:
 * lib/screens/settings_screen.dart (export, import, privacy, about)
@@ -162,12 +147,9 @@ Supporting Files:
 External Integrations:
 * share_plus (export), file_picker (import), path_provider
 
-Entry Points:
-* route `/settings`
-
 ## Onboarding
 
-Category: Page
+Category: Page · route `/onboarding` (router redirect on fresh install)
 
 Primary Files:
 * lib/screens/onboarding_screen.dart (three pages, `initialPage` from `?page=`)
@@ -176,9 +158,6 @@ Supporting Files:
 * lib/widgets/onboarding_art.dart
 * lib/data/providers.dart (onboardingSeenProvider, `onboardingSeenKey`)
 * lib/data/repository.dart (`getMeta`, `setMeta`)
-
-Entry Points:
-* route `/onboarding` (router redirect on fresh install)
 
 ## Platform Projects
 
