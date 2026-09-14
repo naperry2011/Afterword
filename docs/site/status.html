@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Afterword Launch Status</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;600&family=Nunito:wght@400;600;700&display=swap">
+<style>
+  :root{
+    --bg:#241F33; --surface:#2C2640; --alt:#3A3352; --outline:#141120;
+    --cream:#EDE3CE; --dim:#9C92B8; --amber:#D9A45E; --plum:#9179A6;
+    --rose:#C4837A; --sage:#6D8B71; --ink:#241F33;
+    --pix:"Pixelify Sans","Nunito",system-ui,sans-serif;
+    --body:"Nunito",system-ui,sans-serif;
+  }
+  html{color-scheme:dark}
+  body{background:var(--bg);color:var(--cream);font-family:var(--body);font-size:16.5px;line-height:1.65;margin:0;padding:40px 22px 64px}
+  .wrap{max-width:1040px;margin:0 auto}
+  .pix{font-family:var(--pix);letter-spacing:.03em}
+  h1,h2,h3{font-family:var(--pix);font-weight:600;line-height:1.15;margin:0;text-wrap:balance}
+  h1{font-size:clamp(30px,5vw,44px)}
+  h2{font-size:22px}
+  h3{font-size:17px;font-weight:500}
+  .eyebrow{font-family:var(--pix);font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--rose)}
+  header{display:grid;gap:14px;margin-bottom:34px}
+  .dek{color:var(--dim);max-width:60ch;margin:0}
+  .facts{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+  .fact{display:inline-flex;gap:8px;align-items:baseline;background:var(--surface);border:3px solid var(--outline);padding:8px 14px}
+  .fact b{font-family:var(--pix);font-weight:600;font-size:18px;color:var(--amber)}
+  .fact span{font-size:13.5px;color:var(--dim);text-transform:uppercase;letter-spacing:.05em;font-family:var(--pix)}
+  .dither{height:12px;margin:34px 0;background-image:linear-gradient(45deg,var(--alt) 25%,transparent 25%,transparent 75%,var(--alt) 75%),linear-gradient(45deg,var(--alt) 25%,transparent 25%,transparent 75%,var(--alt) 75%);background-size:8px 8px;background-position:0 0,4px 4px}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start}
+  @media (max-width:760px){.cols{grid-template-columns:1fr}}
+  .panel{background:var(--surface);border:3px solid var(--outline);box-shadow:5px 5px 0 rgba(0,0,0,.45);padding:22px 22px 8px}
+  .panel.ready h2{color:var(--sage)}
+  .panel.todo h2{color:var(--amber)}
+  .panel > p{color:var(--dim);font-size:15px;margin:6px 0 0}
+  ul.items{list-style:none;margin:14px 0 0;padding:0}
+  ul.items li{padding:13px 0;border-top:2px dashed var(--alt);display:grid;gap:3px}
+  ul.items li:first-child{border-top:0}
+  .t{font-weight:700}
+  .t a{color:var(--plum);text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--alt)}
+  .m{color:var(--dim);font-size:15px}
+  .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:4px}
+  .chip{font-family:var(--pix);font-size:12px;letter-spacing:.05em;text-transform:uppercase;border:2px solid var(--outline);padding:3px 9px;background:var(--bg);color:var(--dim)}
+  .chip.nick{color:var(--ink);background:var(--amber)}
+  .chip.claude{color:var(--cream);background:var(--plum)}
+  .chip.team{color:var(--ink);background:var(--sage)}
+  .chip.date{color:var(--cream);background:var(--alt)}
+  ol.steps{list-style:none;counter-reset:s;margin:14px 0 0;padding:0}
+  ol.steps li{counter-increment:s;padding:13px 0 13px 40px;border-top:2px dashed var(--alt);position:relative;display:grid;gap:3px}
+  ol.steps li:first-child{border-top:0}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:14px;width:26px;height:26px;display:grid;place-items:center;font-family:var(--pix);font-size:13px;color:var(--ink);background:var(--amber);border:2px solid var(--outline)}
+  ol.steps li.blocked::before{background:var(--rose)}
+  .note{margin-top:28px;border-left:5px solid var(--rose);background:var(--surface);padding:16px 20px}
+  .note h3{color:var(--rose);margin-bottom:6px}
+  .note p{margin:0;color:var(--cream)}
+  table{width:100%;border-collapse:collapse;margin-top:14px;font-size:15.5px}
+  th{font-family:var(--pix);font-weight:500;font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);text-align:left;padding:8px 10px 8px 0;border-bottom:3px solid var(--outline)}
+  td{padding:10px 10px 10px 0;border-bottom:2px dashed var(--alt);vertical-align:top;font-variant-numeric:tabular-nums}
+  td:first-child{font-family:var(--pix);color:var(--amber);white-space:nowrap}
+  .over{overflow-x:auto}
+  .defer{margin-top:28px;color:var(--dim);font-size:15px}
+  .defer b{color:var(--cream);font-family:var(--pix);font-weight:500}
+  footer{margin-top:40px;color:var(--dim);font-size:13.5px;border-top:2px dashed var(--alt);padding-top:14px}
+  a:focus-visible{outline:3px solid var(--rose);outline-offset:3px}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Afterword · iOS · v1.0.0 build 1</div>
+  <h1>Signed build in hand. Six steps to submit.</h1>
+  <p class="dek">Status as of Saturday 13 September 2026, evening. The app is code-complete, polished, and archived for the App Store. What remains is store setup, a short round of real-phone testing, and pressing Submit.</p>
+  <div class="facts">
+    <div class="fact"><b>Sept 15–16</b><span>Target submit</span></div>
+    <div class="fact"><b>Sept 17–18</b><span>Target live</span></div>
+    <div class="fact"><b>7 / 7</b><span>Tests passing</span></div>
+    <div class="fact"><b>22.6 MB</b><span>Signed IPA</span></div>
+  </div>
+</header>
+
+<div class="cols">
+  <section class="panel ready">
+    <h2>Ready now</h2>
+    <p>Done, verified, and pushed to GitHub.</p>
+    <ul class="items">
+      <li><div class="t">The core loop works end to end</div><div class="m">Add a book, mark it finished, answer the three prompts, land on a card, share it. Covered by an automated test that drives the real screens.</div></li>
+      <li><div class="t">Polish pass complete</div><div class="m">Pixel lamp icon, dark launch screen, portrait-only, every empty state designed, onboarding with real illustrations, Dynamic Type up to 1.6× with an overflow guard on every screen.</div></li>
+      <li><div class="t">Signed App Store build</div><div class="m">Archived and exported as <code>afterword.ipa</code>, signed Apple Distribution: Nicholas Perry, team PGVTN7X3HQ. Waiting to be uploaded.</div></li>
+      <li><div class="t">Store screenshots</div><div class="m">Four at Apple's 6.9″ size (1320 × 2868): shelf, reflect, card, book. In the repo under <code>docs/store</code>.</div></li>
+      <li><div class="t">Site is live</div><div class="m"><a href="https://naperry2011.github.io/Afterword/">Landing page</a> · <a href="https://naperry2011.github.io/Afterword/privacy.html">Privacy</a> · <a href="https://naperry2011.github.io/Afterword/support.html">Support</a>. The last two are what App Store Connect asks for.</div></li>
+      <li><div class="t">Local-only by design</div><div class="m">No account, no server, no analytics. App Privacy answers will be "no data collected". Export and import in Settings cover moving phones.</div></li>
+      <li><div class="t">Decisions written down</div><div class="m">Scope, cut order, package choices, the no-device constraint and the repo move are all in <code>docs/decisions.md</code> and <code>CLAUDE.md</code>.</div></li>
+    </ul>
+  </section>
+
+  <section class="panel todo">
+    <h2>Left to do</h2>
+    <p>In order. Each step unblocks the next.</p>
+    <ol class="steps">
+      <li><div class="t">Create the App Store Connect record</div><div class="m">Name Afterword, bundle id <code>com.nickperry.afterword</code>, SKU <code>afterword-ios</code>. Needs Nick's Apple sign-in.</div><div class="row"><span class="chip nick">Nick</span><span class="chip date">Sept 14</span></div></li>
+      <li><div class="t">Upload the IPA with Transporter</div><div class="m">Drag <code>build/ios/ipa/afterword.ipa</code> in, press Deliver. Processing takes 10–30 minutes, then it appears under TestFlight.</div><div class="row"><span class="chip nick">Nick</span><span class="chip date">Sept 14</span></div></li>
+      <li><div class="t">Enter the listing</div><div class="m">Description, subtitle, keywords, promo text, age rating, review notes, App Privacy questionnaire. Claude drafts the text; Nick pastes and uploads the screenshots.</div><div class="row"><span class="chip claude">Claude</span><span class="chip nick">Nick</span><span class="chip date">Sept 14</span></div></li>
+      <li class="blocked"><div class="t">Three people test on real iPhones via TestFlight</div><div class="m">Nobody on the project has an iPhone right now, so this is our only real-device check. Each tester adds a book they actually finished and goes through the prompts. If they skip all three, the prompts are wrong, not the testers.</div><div class="row"><span class="chip team">Team</span><span class="chip date">Sept 14–15</span></div></li>
+      <li><div class="t">Fix blockers only</div><div class="m">Crashes, share sheet failures, unreadable text. No opportunistic changes.</div><div class="row"><span class="chip claude">Claude</span><span class="chip date">Sept 15</span></div></li>
+      <li><div class="t">Submit for review</div><div class="m">Apple review is usually under a day now, historically one to three. Any rejection gets answered the same day.</div><div class="row"><span class="chip nick">Nick</span><span class="chip date">Sept 15–16</span></div></li>
+    </ol>
+  </section>
+</div>
+
+<div class="note">
+  <h3>The one risk worth naming</h3>
+  <p>Everything has been verified on simulators and in automated tests, not on a physical phone. The share sheet and file picker are the two places that could behave differently on hardware. Step 4 exists to catch that before Apple does, so please recruit the testers today rather than after upload.</p>
+</div>
+
+<div class="dither"></div>
+
+<section>
+  <h2>After approval</h2>
+  <div class="over">
+  <table>
+    <tr><th>When</th><th>What</th><th>Who</th></tr>
+    <tr><td>On approval</td><td>Paste the App Store URL into both download buttons on the landing page.</td><td>Claude</td></tr>
+    <tr><td>Week of Sept 21</td><td>Pick an email list service (Buttondown or Mailchimp) and wire the "Keep me posted" form. It falls back to a mailto link until then.</td><td>Nick</td></tr>
+    <tr><td>Week of Sept 21</td><td>Confirm the Google Play account type, then schedule Android. Personal accounts created after Nov 2023 need 12 testers for 14 days before production.</td><td>Nick</td></tr>
+    <tr><td>Later</td><td>Custom domain for the site, if the app gets traction.</td><td>Nick</td></tr>
+  </table>
+  </div>
+  <p class="defer"><b>Deliberately not in v1:</b> quotes and passages, year in review, cover scanning, social features, film and TV, accounts and sync, Android. All of it lives on the landing page's "What's coming" list and nowhere in the app, which is what Apple requires.</p>
+</section>
+
+<footer>Repo: github.com/naperry2011/Afterword · Working docs: CLAUDE.md, docs/afterword-build-spec.md, docs/decisions.md · Prepared with Claude Code.</footer>
+</div>
+</body>
+</html>
