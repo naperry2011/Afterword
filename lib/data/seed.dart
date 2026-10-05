@@ -75,9 +75,11 @@ Future<void> applySeedIfEmpty(Repository repo) async {
     await repo.setStatus(id, SessionStatus.finished);
     if (title == 'Piranesi') {
       await repo.saveReflections(id, {
-        'stayed': 'The tides. A house with an ocean in it, and the way he '
+        'stayed':
+            'The tides. A house with an ocean in it, and the way he '
             'keeps a record of everything because nobody else will.',
-        'who': 'You. You read for atmosphere more than plot and this is '
+        'who':
+            'You. You read for atmosphere more than plot and this is '
             'nothing but atmosphere. Also the tides. I\'m still thinking '
             'about the tides.',
       });

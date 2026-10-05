@@ -10,16 +10,19 @@ final databaseProvider = Provider<AppDatabase>((ref) {
   return db;
 });
 
-final repositoryProvider =
-    Provider<Repository>((ref) => Repository(ref.watch(databaseProvider)));
+final repositoryProvider = Provider<Repository>(
+  (ref) => Repository(ref.watch(databaseProvider)),
+);
 
 final openLibraryProvider = Provider<OpenLibrary>((ref) => OpenLibrary());
 
 final shelfProvider = StreamProvider<List<ShelfEntry>>(
-    (ref) => ref.watch(repositoryProvider).watchShelf());
+  (ref) => ref.watch(repositoryProvider).watchShelf(),
+);
 
 final sessionProvider = StreamProvider.family<SessionDetail?, String>(
-    (ref, id) => ref.watch(repositoryProvider).watchSession(id));
+  (ref, id) => ref.watch(repositoryProvider).watchSession(id),
+);
 
 const onboardingSeenKey = 'onboarding.seen';
 

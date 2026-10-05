@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../theme/layout.dart';
 import '../theme/shapes.dart';
 import '../theme/tokens.dart';
 import 'dither_fill.dart';
@@ -49,7 +50,8 @@ class ProgressSpine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final g = spineGeometry(bookId, maxHeight);
-    final fill = (progress.clamp(0, 100) / 100) * (g.height - 6);
+    final fill =
+        (progress.clamp(0, 100) / 100) * (g.height - 2 * PixelGrid.outline);
     return Container(
       width: g.width,
       height: g.height,
@@ -58,10 +60,7 @@ class ProgressSpine extends StatelessWidget {
         border: pixelBorder(spineColorFor(bookId)),
       ),
       alignment: Alignment.bottomCenter,
-      child: Container(
-        height: fill,
-        color: spineColorFor(bookId),
-      ),
+      child: Container(height: fill, color: spineColorFor(bookId)),
     );
   }
 }
@@ -71,10 +70,12 @@ class EmptySlot extends StatelessWidget {
   const EmptySlot({super.key, required this.maxHeight});
   final double maxHeight;
 
+  static const double width = 26;
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 26,
+      width: width,
       height: maxHeight * 0.8,
       child: const DitherFill(),
     );

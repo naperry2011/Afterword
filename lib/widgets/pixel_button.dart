@@ -30,16 +30,16 @@ class _PixelButtonState extends State<PixelButton> {
   bool _pressed = false;
 
   Color get _fill => switch (widget.tone) {
-        PixelButtonTone.plum => Tokens.plum,
-        PixelButtonTone.amber => Tokens.amber,
-        PixelButtonTone.surface => Tokens.surface,
-      };
+    PixelButtonTone.plum => Tokens.plum,
+    PixelButtonTone.amber => Tokens.amber,
+    PixelButtonTone.surface => Tokens.surface,
+  };
 
   Color get _ink => switch (widget.tone) {
-        PixelButtonTone.plum => Tokens.cream,
-        PixelButtonTone.amber => Tokens.inkOnCream,
-        PixelButtonTone.surface => Tokens.cream,
-      };
+    PixelButtonTone.plum => Tokens.cream,
+    PixelButtonTone.amber => Tokens.inkOnCream,
+    PixelButtonTone.surface => Tokens.cream,
+  };
 
   @override
   Widget build(BuildContext context) {

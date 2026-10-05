@@ -60,7 +60,9 @@ void main() {
     expect(find.text('Skip'), findsOneWidget);
 
     await tester.enterText(
-        find.byType(TextField), 'You. You read for atmosphere, not plot.');
+      find.byType(TextField),
+      'You. You read for atmosphere, not plot.',
+    );
     await tester.tap(find.text('Next'));
     await settle(tester);
     expect(find.text('What did it change?'), findsOneWidget);
@@ -75,7 +77,10 @@ void main() {
 
     // Card renders the `who` answer and offers the share button.
     expect(find.text('Send it'), findsOneWidget);
-    expect(find.text('You. You read for atmosphere, not plot.'), findsOneWidget);
+    expect(
+      find.text('You. You read for atmosphere, not plot.'),
+      findsOneWidget,
+    );
     expect(find.text('AFTERWORD'), findsOneWidget);
 
     // Back on the Book screen the saved answers show, the skipped optional
@@ -85,8 +90,11 @@ void main() {
     expect(find.text('WHAT STAYED WITH YOU?'), findsOneWidget);
     expect(find.text('The tides.'), findsOneWidget);
     expect(find.text('WHAT DID IT CHANGE?'), findsNothing);
-    await tester.scrollUntilVisible(find.text('Send a card'), 120,
-        scrollable: find.byType(Scrollable).first);
+    await tester.scrollUntilVisible(
+      find.text('Send a card'),
+      120,
+      scrollable: find.byType(Scrollable).first,
+    );
     expect(find.text('Send a card'), findsOneWidget);
 
     await tearDownApp(tester, db);
@@ -98,7 +106,10 @@ void main() {
     await tester.runAsync(() async {
       await repo.setMeta(onboardingSeenKey, 'true');
       await repo.addBook(
-          title: 'Stoner', author: 'John Williams', source: BookSource.manual);
+        title: 'Stoner',
+        author: 'John Williams',
+        source: BookSource.manual,
+      );
     });
 
     await tester.pumpWidget(

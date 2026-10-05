@@ -48,7 +48,9 @@ class _ReflectScreenState extends ConsumerState<ReflectScreen> {
     if (detail.session.status == SessionStatus.abandoned) {
       final stopped = responses['stopped']?.trim();
       await repo.setAbandonReason(
-          detail.session.id, stopped == null || stopped.isEmpty ? null : stopped);
+        detail.session.id,
+        stopped == null || stopped.isEmpty ? null : stopped,
+      );
     }
     if (!mounted) return;
     final who = responses['who']?.trim() ?? '';
@@ -57,6 +59,14 @@ class _ReflectScreenState extends ConsumerState<ReflectScreen> {
     } else {
       context.pop();
     }
+  }
+
+  /// Five lines at least; more when the screen has the height for them.
+  /// Leaves room for the book title, the prompt, and the example below.
+  static int _answerLines(BuildContext context, double available) {
+    const reserved = 230.0;
+    final line = MediaQuery.textScalerOf(context).scale(18) * kBodyLineHeight;
+    return ((available - reserved) / line).floor().clamp(5, 12);
   }
 
   @override
@@ -72,8 +82,10 @@ class _ReflectScreenState extends ConsumerState<ReflectScreen> {
             final prompts = promptsFor(d.session.status);
             final prompt = prompts[_index];
             final last = _index == prompts.length - 1;
-            final controller =
-                _controllerFor(prompt.key, d.byKey(prompt.key)?.response ?? '');
+            final controller = _controllerFor(
+              prompt.key,
+              d.byKey(prompt.key)?.response ?? '',
+            );
             final titleColor = prompt.optional ? Tokens.dim : Tokens.cream;
 
             return Padding(
@@ -100,45 +112,52 @@ class _ReflectScreenState extends ConsumerState<ReflectScreen> {
                   ),
                   const SizedBox(height: 18),
                   // Scrolls at large Dynamic Type. Skip and Next stay pinned
-                  // below so Skip is always visible.
+                  // below so Skip is always visible. The answer field grows
+                  // into spare height so a tall screen reads as a page to
+                  // write on, not a gap.
                   Expanded(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            d.book.title,
-                            style: body(size: 15, color: Tokens.dim),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            prompt.title,
-                            style: pix(
-                              size: 30,
-                              weight: FontWeight.w600,
-                              color: titleColor,
+                    child: LayoutBuilder(
+                      builder: (context, c) => SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              d.book.title,
+                              style: body(size: 15, color: Tokens.dim),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                          ),
-                          const SizedBox(height: 22),
-                          TextField(
-                            key: ValueKey(prompt.key),
-                            controller: controller,
-                            autofocus: true,
-                            minLines: 5,
-                            maxLines: null,
-                            textAlignVertical: TextAlignVertical.top,
-                            style: body(size: 18),
-                            decoration: const InputDecoration(hintText: ''),
-                          ),
-                          const SizedBox(height: 10),
-                          Text(prompt.example,
+                            const SizedBox(height: 10),
+                            Text(
+                              prompt.title,
+                              style: pix(
+                                size: 30,
+                                weight: FontWeight.w600,
+                                color: titleColor,
+                              ),
+                            ),
+                            const SizedBox(height: 22),
+                            TextField(
+                              key: ValueKey(prompt.key),
+                              controller: controller,
+                              autofocus: true,
+                              minLines: _answerLines(context, c.maxHeight),
+                              maxLines: null,
+                              textAlignVertical: TextAlignVertical.top,
+                              style: body(size: 18),
+                              decoration: const InputDecoration(hintText: ''),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              prompt.example,
                               style: body(
-                                  size: 15,
-                                  color: Tokens.dim,
-                                  style: FontStyle.italic)),
-                        ],
+                                size: 15,
+                                color: Tokens.dim,
+                                style: FontStyle.italic,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),

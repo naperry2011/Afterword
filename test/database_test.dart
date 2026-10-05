@@ -14,35 +14,37 @@ void main() {
 
   tearDown(() => db.close());
 
-  test('add a book, finish it, reflect, and read it back from the shelf',
-      () async {
-    final id = await repo.addBook(
-      title: 'Piranesi',
-      author: 'Susanna Clarke',
-      year: 2020,
-      source: BookSource.manual,
-    );
-    var shelf = await repo.watchShelf().first;
-    expect(shelf, hasLength(1));
-    expect(shelf.single.session.status, SessionStatus.reading);
+  test(
+    'add a book, finish it, reflect, and read it back from the shelf',
+    () async {
+      final id = await repo.addBook(
+        title: 'Piranesi',
+        author: 'Susanna Clarke',
+        year: 2020,
+        source: BookSource.manual,
+      );
+      var shelf = await repo.watchShelf().first;
+      expect(shelf, hasLength(1));
+      expect(shelf.single.session.status, SessionStatus.reading);
 
-    await repo.setProgress(id, 60);
-    await repo.setStatus(id, SessionStatus.finished);
-    await repo.saveReflections(id, {
-      'stayed': 'The tides.',
-      'who': 'You. You read for atmosphere.',
-      'changed': '',
-    });
+      await repo.setProgress(id, 60);
+      await repo.setStatus(id, SessionStatus.finished);
+      await repo.saveReflections(id, {
+        'stayed': 'The tides.',
+        'who': 'You. You read for atmosphere.',
+        'changed': '',
+      });
 
-    final detail = await repo.getSession(id);
-    expect(detail!.session.status, SessionStatus.finished);
-    expect(detail.session.progress, 100);
-    expect(detail.reflections.map((r) => r.promptKey), ['stayed', 'who']);
-    expect(detail.byKey('who')!.response, 'You. You read for atmosphere.');
+      final detail = await repo.getSession(id);
+      expect(detail!.session.status, SessionStatus.finished);
+      expect(detail.session.progress, 100);
+      expect(detail.reflections.map((r) => r.promptKey), ['stayed', 'who']);
+      expect(detail.byKey('who')!.response, 'You. You read for atmosphere.');
 
-    shelf = await repo.watchShelf().first;
-    expect(shelf.single.session.status, SessionStatus.finished);
-  });
+      shelf = await repo.watchShelf().first;
+      expect(shelf.single.session.status, SessionStatus.finished);
+    },
+  );
 
   test('export then import into a fresh database round-trips', () async {
     final id = await repo.addBook(

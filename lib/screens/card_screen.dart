@@ -10,6 +10,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../data/providers.dart';
 import '../data/repository.dart';
+import '../theme/layout.dart';
 import '../theme/text.dart';
 import '../theme/tokens.dart';
 import '../widgets/cover.dart';
@@ -38,8 +39,9 @@ class _CardScreenState extends ConsumerState<CardScreen> {
     if (_sharing) return;
     setState(() => _sharing = true);
     try {
-      final boundary = _boundary.currentContext?.findRenderObject()
-          as RenderRepaintBoundary?;
+      final boundary =
+          _boundary.currentContext?.findRenderObject()
+              as RenderRepaintBoundary?;
       if (boundary == null) return;
       final image = await boundary.toImage(pixelRatio: kCardPixelRatio);
       final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
@@ -51,14 +53,15 @@ class _CardScreenState extends ConsumerState<CardScreen> {
           .replaceAll(RegExp(r'^-|-$'), '');
       final file = File('${dir.path}/afterword-$safe.png');
       await file.writeAsBytes(bytes.buffer.asUint8List());
-      await ref.read(repositoryProvider).recordCard(
-            d.session.id,
-            d.reflections.map((r) => r.id).toList(),
-          );
-      await SharePlus.instance.share(ShareParams(
-        files: [XFile(file.path, mimeType: 'image/png')],
-        subject: 'You should read ${d.book.title}',
-      ));
+      await ref
+          .read(repositoryProvider)
+          .recordCard(d.session.id, d.reflections.map((r) => r.id).toList());
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(file.path, mimeType: 'image/png')],
+          subject: 'You should read ${d.book.title}',
+        ),
+      );
     } finally {
       if (mounted) setState(() => _sharing = false);
     }
@@ -82,8 +85,10 @@ class _CardScreenState extends ConsumerState<CardScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('No card yet.',
-                        style: pix(size: 22, weight: FontWeight.w600)),
+                    Text(
+                      'No card yet.',
+                      style: pix(size: 22, weight: FontWeight.w600),
+                    ),
                     const SizedBox(height: 8),
                     Text(
                       'The card is your answer to "Who should read this, and why them?"',
@@ -93,43 +98,58 @@ class _CardScreenState extends ConsumerState<CardScreen> {
                     const SizedBox(height: 22),
                     PixelButton(
                       label: 'Answer it',
-                      onPressed: () => context
-                          .pushReplacement('/book/${d.session.id}/reflect'),
+                      onPressed: () => context.pushReplacement(
+                        '/book/${d.session.id}/reflect',
+                      ),
                     ),
                   ],
                 ),
               ),
             );
           }
+          // The preview is width-bound, so tall screens have height to spare.
+          // Narrower side margins there, and the card sits above centre so the
+          // spare room collects between it and the button.
+          final tall = Fit.of(context).heroScale > 1;
           return Column(
             children: [
               Expanded(
-                child: Center(
+                child: Align(
+                  alignment: const Alignment(0, -0.4),
                   child: Padding(
-                    padding: const EdgeInsets.all(24),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: tall ? 16 : 24,
+                      vertical: 24,
+                    ),
                     child: FittedBox(
                       child: RepaintBoundary(
                         key: _boundary,
                         // The card is a fixed-size image. It ignores Dynamic
                         // Type so the PNG is identical on every device.
                         child: MediaQuery(
-                          data: MediaQuery.of(context)
-                              .copyWith(textScaler: TextScaler.noScaling),
+                          data: MediaQuery.of(
+                            context,
+                          ).copyWith(textScaler: TextScaler.noScaling),
                           child: _RecommendationCard(
-                              detail: d, who: who.response),
+                            detail: d,
+                            who: who.response,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 0, 24, 28),
-                child: PixelButton(
-                  label: _sharing ? 'Rendering…' : 'Send it',
-                  tone: PixelButtonTone.amber,
-                  expand: true,
-                  onPressed: _sharing ? null : () => _share(d),
+              SafeArea(
+                top: false,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 28),
+                  child: PixelButton(
+                    label: _sharing ? 'Rendering…' : 'Send it',
+                    tone: PixelButtonTone.amber,
+                    expand: true,
+                    onPressed: _sharing ? null : () => _share(d),
+                  ),
                 ),
               ),
             ],
@@ -160,7 +180,11 @@ class _RecommendationCard extends StatelessWidget {
             color: Tokens.cream,
             border: Border.all(color: Tokens.outline, width: 4),
             boxShadow: const [
-              BoxShadow(color: Tokens.amber, offset: Offset(8, 8), blurRadius: 0),
+              BoxShadow(
+                color: Tokens.amber,
+                offset: Offset(8, 8),
+                blurRadius: 0,
+              ),
             ],
           ),
           padding: const EdgeInsets.all(30),
@@ -176,51 +200,65 @@ class _RecommendationCard extends StatelessWidget {
                     author: b.author,
                     coverUrl: b.coverRef,
                     width: 72,
+                    snapToDevice: false,
                   ),
                   const SizedBox(width: 18),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(b.title,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: pix(
-                                size: 26,
-                                weight: FontWeight.w600,
-                                color: Tokens.inkOnCream)),
+                        Text(
+                          b.title,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: pix(
+                            size: 26,
+                            weight: FontWeight.w600,
+                            color: Tokens.inkOnCream,
+                          ),
+                        ),
                         const SizedBox(height: 4),
-                        Text(b.author,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: body(size: 16, color: Tokens.dimOnCream)),
+                        Text(
+                          b.author,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: body(size: 16, color: Tokens.dimOnCream),
+                        ),
                       ],
                     ),
                   ),
                 ],
               ),
               const DashedRule(
-                  color: Tokens.ruleOnCream,
-                  margin: EdgeInsets.symmetric(vertical: 18)),
+                color: Tokens.ruleOnCream,
+                margin: EdgeInsets.symmetric(vertical: 18),
+              ),
               Expanded(
                 child: Text(
                   who,
                   maxLines: 9,
                   overflow: TextOverflow.ellipsis,
-                  style: body(size: 21, color: Tokens.inkOnCream)
-                      .copyWith(height: 1.55),
+                  style: body(
+                    size: 21,
+                    color: Tokens.inkOnCream,
+                  ).copyWith(height: 1.55),
                 ),
               ),
               const DashedRule(
-                  color: Tokens.ruleOnCream,
-                  margin: EdgeInsets.only(top: 14, bottom: 12)),
+                color: Tokens.ruleOnCream,
+                margin: EdgeInsets.only(top: 14, bottom: 12),
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('A RECOMMENDATION',
-                      style: pix(size: 14, color: Tokens.dimOnCream)),
-                  Text('AFTERWORD',
-                      style: pix(size: 14, color: Tokens.dimOnCream)),
+                  Text(
+                    'A RECOMMENDATION',
+                    style: pix(size: 14, color: Tokens.dimOnCream),
+                  ),
+                  Text(
+                    'AFTERWORD',
+                    style: pix(size: 14, color: Tokens.dimOnCream),
+                  ),
                 ],
               ),
             ],

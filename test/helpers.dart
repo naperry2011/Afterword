@@ -16,13 +16,16 @@ Future<T> drive<T>(WidgetTester tester, Future<T> future) async {
   var done = false;
   T? result;
   Object? error;
-  future.then((v) {
-    result = v;
-    done = true;
-  }, onError: (Object e) {
-    error = e;
-    done = true;
-  });
+  future.then(
+    (v) {
+      result = v;
+      done = true;
+    },
+    onError: (Object e) {
+      error = e;
+      done = true;
+    },
+  );
   for (var i = 0; i < 40 && !done; i++) {
     await tester.pump(const Duration(milliseconds: 50));
   }

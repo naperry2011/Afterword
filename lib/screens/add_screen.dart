@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../data/database.dart';
 import '../data/open_library.dart';
 import '../data/providers.dart';
+import '../theme/layout.dart';
 import '../theme/text.dart';
 import '../theme/tokens.dart';
 import '../widgets/cover.dart';
@@ -60,7 +61,9 @@ class _AddScreenState extends ConsumerState<AddScreen> {
   Future<void> _addHit(BookHit hit) async {
     if (_adding) return;
     setState(() => _adding = true);
-    final id = await ref.read(repositoryProvider).addBook(
+    final id = await ref
+        .read(repositoryProvider)
+        .addBook(
           title: hit.title,
           author: hit.author,
           year: hit.year,
@@ -82,7 +85,12 @@ class _AddScreenState extends ConsumerState<AddScreen> {
               onCancel: () => setState(() => _manual = false),
             )
           : ListView(
-              padding: const EdgeInsets.fromLTRB(24, 20, 24, 40),
+              padding: EdgeInsets.fromLTRB(
+                24,
+                20,
+                24,
+                40 + Fit.of(context).bottomInset,
+              ),
               children: [
                 TextField(
                   controller: _query,
@@ -91,7 +99,8 @@ class _AddScreenState extends ConsumerState<AddScreen> {
                   onSubmitted: (_) => _search(),
                   style: body(size: 17),
                   decoration: const InputDecoration(
-                      hintText: 'Title or author'),
+                    hintText: 'Title or author',
+                  ),
                 ),
                 const SizedBox(height: 12),
                 PixelButton(
@@ -117,12 +126,17 @@ class _AddScreenState extends ConsumerState<AddScreen> {
     switch (_phase) {
       case _Phase.idle:
         return [
-          Text('Search Open Library, or add it by hand if it isn\'t there.',
-              style: body(size: 15.5, color: Tokens.dim)),
+          Text(
+            'Search Open Library, or add it by hand if it isn\'t there.',
+            style: body(size: 15.5, color: Tokens.dim),
+          ),
         ];
       case _Phase.searching:
         return [
-          Text('Asking Open Library…', style: body(size: 15.5, color: Tokens.dim)),
+          Text(
+            'Asking Open Library…',
+            style: body(size: 15.5, color: Tokens.dim),
+          ),
         ];
       case _Phase.failed:
         return [
@@ -131,18 +145,24 @@ class _AddScreenState extends ConsumerState<AddScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('SEARCH DIDN\'T WORK', style: pix(size: 12, color: Tokens.rose)),
+                Text(
+                  'SEARCH DIDN\'T WORK',
+                  style: pix(size: 12, color: Tokens.rose),
+                ),
                 const SizedBox(height: 6),
                 Text(_error, style: body(size: 16)),
                 const SizedBox(height: 6),
-                Text('You can still add the book. Nothing is lost.',
-                    style: body(size: 14.5, color: Tokens.dim)),
+                Text(
+                  'You can still add the book. Nothing is lost.',
+                  style: body(size: 14.5, color: Tokens.dim),
+                ),
                 const SizedBox(height: 14),
                 Row(
                   children: [
                     PixelButton(
-                        label: 'Add by hand',
-                        onPressed: () => setState(() => _manual = true)),
+                      label: 'Add by hand',
+                      onPressed: () => setState(() => _manual = true),
+                    ),
                     const SizedBox(width: 8),
                     QuietButton(label: 'Try again', onPressed: _search),
                   ],
@@ -156,16 +176,20 @@ class _AddScreenState extends ConsumerState<AddScreen> {
           return [
             Text('Nothing matched.', style: pix(size: 18)),
             const SizedBox(height: 6),
-            Text('Try a different spelling, or add it by hand.',
-                style: body(size: 15, color: Tokens.dim)),
+            Text(
+              'Try a different spelling, or add it by hand.',
+              style: body(size: 15, color: Tokens.dim),
+            ),
             const SizedBox(height: 14),
             PixelButton(
-                label: 'Add by hand',
-                onPressed: () => setState(() => _manual = true)),
+              label: 'Add by hand',
+              onPressed: () => setState(() => _manual = true),
+            ),
           ];
         }
         return [
-          for (final hit in _hits) _HitTile(hit: hit, onTap: () => _addHit(hit)),
+          for (final hit in _hits)
+            _HitTile(hit: hit, onTap: () => _addHit(hit)),
         ];
     }
   }
@@ -196,12 +220,16 @@ class _HitTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(hit.title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: body(size: 16.5, weight: FontWeight.w600)),
                   Text(
-                    hit.year == null ? hit.author : '${hit.author} · ${hit.year}',
+                    hit.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: body(size: 16.5, weight: FontWeight.w600),
+                  ),
+                  Text(
+                    hit.year == null
+                        ? hit.author
+                        : '${hit.author} · ${hit.year}',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: body(size: 14, color: Tokens.dim),
@@ -242,7 +270,9 @@ class _ManualEntryState extends ConsumerState<_ManualEntry> {
   Future<void> _save() async {
     if (_title.text.trim().isEmpty || _saving) return;
     setState(() => _saving = true);
-    final id = await ref.read(repositoryProvider).addBook(
+    final id = await ref
+        .read(repositoryProvider)
+        .addBook(
           title: _title.text,
           author: _author.text.trim().isEmpty ? 'Unknown author' : _author.text,
           year: int.tryParse(_year.text.trim()),
@@ -255,7 +285,12 @@ class _ManualEntryState extends ConsumerState<_ManualEntry> {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: const EdgeInsets.fromLTRB(24, 20, 24, 40),
+      padding: EdgeInsets.fromLTRB(
+        24,
+        20,
+        24,
+        40 + Fit.of(context).bottomInset,
+      ),
       children: [
         Text('TITLE', style: pix(size: 13, color: Tokens.rose)),
         const SizedBox(height: 8),
@@ -291,7 +326,12 @@ class _ManualEntryState extends ConsumerState<_ManualEntry> {
           onPressed: _title.text.trim().isEmpty || _saving ? null : _save,
         ),
         const SizedBox(height: 8),
-        Center(child: QuietButton(label: 'Back to search', onPressed: widget.onCancel)),
+        Center(
+          child: QuietButton(
+            label: 'Back to search',
+            onPressed: widget.onCancel,
+          ),
+        ),
       ],
     );
   }

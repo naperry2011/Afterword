@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tokens.bg, the room. The app is dark in both system modes. -->
+    <color name="room">#FF241F33</color>
+</resources>

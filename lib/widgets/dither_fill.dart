@@ -17,10 +17,7 @@ class DitherFill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: _DitherPainter(color, cell / 2),
-      child: child,
-    );
+    return CustomPaint(painter: _DitherPainter(color, cell / 2), child: child);
   }
 }
 

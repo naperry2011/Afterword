@@ -6,6 +6,8 @@ import '../data/database.dart';
 import '../data/prompts.dart';
 import '../data/providers.dart';
 import '../data/repository.dart';
+import '../theme/layout.dart';
+import '../theme/shapes.dart';
 import '../theme/text.dart';
 import '../theme/tokens.dart';
 import '../widgets/cover.dart';
@@ -38,8 +40,11 @@ class BookScreen extends ConsumerWidget {
         error: (e, _) => Center(child: Text('$e', style: body())),
         data: (d) => d == null
             ? Center(
-                child: Text('This book is no longer on your shelf.',
-                    style: body(color: Tokens.dim)))
+                child: Text(
+                  'This book is no longer on your shelf.',
+                  style: body(color: Tokens.dim),
+                ),
+              )
             : _BookBody(detail: d),
       ),
     );
@@ -50,14 +55,20 @@ class BookScreen extends ConsumerWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text('Remove this book?', style: pix(size: 20)),
-        content: Text('Its reflections go with it. There is no undo.',
-            style: body(size: 16, color: Tokens.dim)),
+        content: Text(
+          'Its reflections go with it. There is no undo.',
+          style: body(size: 16, color: Tokens.dim),
+        ),
         actions: [
-          QuietButton(label: 'Keep', onPressed: () => Navigator.pop(ctx, false)),
+          QuietButton(
+            label: 'Keep',
+            onPressed: () => Navigator.pop(ctx, false),
+          ),
           PixelButton(
-              label: 'Remove',
-              tone: PixelButtonTone.surface,
-              onPressed: () => Navigator.pop(ctx, true)),
+            label: 'Remove',
+            tone: PixelButtonTone.surface,
+            onPressed: () => Navigator.pop(ctx, true),
+          ),
         ],
       ),
     );
@@ -86,8 +97,9 @@ class _BookBody extends ConsumerWidget {
       }
     }
 
+    final fit = Fit.of(context);
     return ListView(
-      padding: const EdgeInsets.fromLTRB(24, 24, 24, 40),
+      padding: EdgeInsets.fromLTRB(24, 24, 24, 40 + fit.bottomInset),
       children: [
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -97,7 +109,7 @@ class _BookBody extends ConsumerWidget {
               title: b.title,
               author: b.author,
               coverUrl: b.coverRef,
-              width: 96,
+              width: fit.hero(96),
             ),
             const SizedBox(width: 18),
             Expanded(
@@ -183,7 +195,7 @@ class _StatusRow extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 12),
             decoration: BoxDecoration(
               color: active ? color : Tokens.surface,
-              border: Border.all(color: Tokens.outline, width: 3),
+              border: pixelBorder(),
             ),
             child: Text(
               label,
@@ -246,8 +258,11 @@ class _ProgressSliderState extends State<_ProgressSlider> {
         ),
         SizedBox(
           width: 52,
-          child: Text('${_v.round()}%',
-              textAlign: TextAlign.right, style: pix(size: 16)),
+          child: Text(
+            '${_v.round()}%',
+            textAlign: TextAlign.right,
+            style: pix(size: 16),
+          ),
         ),
       ],
     );
@@ -267,8 +282,10 @@ class _NoReflections extends StatelessWidget {
         children: [
           Text('Nothing written yet.', style: body(size: 16)),
           const SizedBox(height: 4),
-          Text('Three questions, under two minutes, all skippable.',
-              style: body(size: 14.5, color: Tokens.dim)),
+          Text(
+            'Three questions, under two minutes, all skippable.',
+            style: body(size: 14.5, color: Tokens.dim),
+          ),
           const SizedBox(height: 14),
           PixelButton(
             label: 'Answer them',
@@ -293,8 +310,10 @@ class _ReflectionTile extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(prompt?.title.toUpperCase() ?? reflection.promptKey.toUpperCase(),
-              style: pix(size: 12, color: Tokens.rose)),
+          Text(
+            prompt?.title.toUpperCase() ?? reflection.promptKey.toUpperCase(),
+            style: pix(size: 12, color: Tokens.rose),
+          ),
           const SizedBox(height: 6),
           Text(reflection.response, style: body(size: 16)),
         ],

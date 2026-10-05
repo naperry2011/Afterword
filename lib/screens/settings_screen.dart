@@ -8,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../data/providers.dart';
+import '../theme/layout.dart';
 import '../theme/text.dart';
 import '../theme/tokens.dart';
 import '../widgets/dashed_rule.dart';
@@ -38,10 +39,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       final stamp = DateTime.now().toIso8601String().split('T').first;
       final file = File('${dir.path}/afterword-export-$stamp.json');
       await file.writeAsString(json);
-      await SharePlus.instance.share(ShareParams(
-        files: [XFile(file.path, mimeType: 'application/json')],
-        subject: 'Afterword export',
-      ));
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(file.path, mimeType: 'application/json')],
+          subject: 'Afterword export',
+        ),
+      );
     } catch (e) {
       _say('Export failed: $e');
     } finally {
@@ -60,8 +63,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       final f = picked.firstOrNull;
       if (f == null) return;
       final bytes = await f.readAsBytes();
-      final count =
-          await ref.read(repositoryProvider).importJson(utf8.decode(bytes));
+      final count = await ref
+          .read(repositoryProvider)
+          .importJson(utf8.decode(bytes));
       _say('Imported $count ${count == 1 ? 'book' : 'books'}.');
     } on FormatException catch (e) {
       _say(e.message);
@@ -77,7 +81,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(24, 20, 24, 40),
+        padding: EdgeInsets.fromLTRB(
+          24,
+          20,
+          24,
+          40 + Fit.of(context).bottomInset,
+        ),
         children: [
           Text('YOUR DATA', style: pix(size: 13, color: Tokens.rose)),
           const SizedBox(height: 8),
@@ -87,7 +96,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
           const SizedBox(height: 16),
           PixelButton(
-              label: 'Export as JSON', expand: true, onPressed: _busy ? null : _export),
+            label: 'Export as JSON',
+            expand: true,
+            onPressed: _busy ? null : _export,
+          ),
           const SizedBox(height: 10),
           PixelButton(
             label: 'Import from JSON',
@@ -106,11 +118,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           Text('ABOUT', style: pix(size: 13, color: Tokens.rose)),
           const SizedBox(height: 8),
           Text('Afterword 1.0', style: body(size: 16)),
-          Text('A small, good thing to do when you finish a book.',
-              style: body(size: 15.5, color: Tokens.dim)),
+          Text(
+            'A small, good thing to do when you finish a book.',
+            style: body(size: 15.5, color: Tokens.dim),
+          ),
           const SizedBox(height: 6),
-          Text('Book data from Open Library. Type set in Pixelify Sans and Nunito.',
-              style: body(size: 13.5, color: Tokens.dim)),
+          Text(
+            'Book data from Open Library. Type set in Pixelify Sans and Nunito.',
+            style: body(size: 13.5, color: Tokens.dim),
+          ),
         ],
       ),
     );

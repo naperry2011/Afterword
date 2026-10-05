@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../data/database.dart';
 import '../data/providers.dart';
 import '../data/repository.dart';
+import '../theme/layout.dart';
+import '../theme/shapes.dart';
 import '../theme/text.dart';
 import '../theme/tokens.dart';
 import '../widgets/dashed_rule.dart';
@@ -34,8 +36,12 @@ class ShelfScreen extends ConsumerWidget {
       body: shelf.when(
         loading: () => const SizedBox.shrink(),
         error: (e, _) => Center(
-            child: Text('Shelf failed to load.\n$e',
-                textAlign: TextAlign.center, style: body(color: Tokens.dim))),
+          child: Text(
+            'Shelf failed to load.\n$e',
+            textAlign: TextAlign.center,
+            style: body(color: Tokens.dim),
+          ),
+        ),
         data: (entries) => _ShelfBody(entries: entries),
       ),
     );
@@ -48,18 +54,26 @@ class _ShelfBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final finished =
-        entries.where((e) => e.session.status == SessionStatus.finished).toList();
-    final reading =
-        entries.where((e) => e.session.status == SessionStatus.reading).toList();
+    final finished = entries
+        .where((e) => e.session.status == SessionStatus.finished)
+        .toList();
+    final reading = entries
+        .where((e) => e.session.status == SessionStatus.reading)
+        .toList();
     final abandoned = entries
         .where((e) => e.session.status == SessionStatus.abandoned)
         .toList();
 
+    final fit = Fit.of(context);
     return ListView(
-      padding: const EdgeInsets.fromLTRB(0, 24, 0, 40),
+      padding: EdgeInsets.fromLTRB(0, 24, 0, 40 + fit.bottomInset),
       children: [
-        _ShelfRow(finished: finished, reading: reading, abandoned: abandoned),
+        _ShelfRow(
+          finished: finished,
+          reading: reading,
+          abandoned: abandoned,
+          maxHeight: fit.hero(150),
+        ),
         const SizedBox(height: 14),
         Center(
           child: Text(
@@ -72,7 +86,9 @@ class _ShelfBody extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: PixelButton(
-            label: entries.isEmpty ? 'Add the book you\'re reading' : 'Add a book',
+            label: entries.isEmpty
+                ? 'Add the book you\'re reading'
+                : 'Add a book',
             expand: true,
             onPressed: () => context.push('/add'),
           ),
@@ -119,9 +135,27 @@ class _ShelfBody extends StatelessWidget {
 }
 
 const _words = [
-  'NO', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIGHT', 'NINE',
-  'TEN', 'ELEVEN', 'TWELVE', 'THIRTEEN', 'FOURTEEN', 'FIFTEEN', 'SIXTEEN',
-  'SEVENTEEN', 'EIGHTEEN', 'NINETEEN', 'TWENTY',
+  'NO',
+  'ONE',
+  'TWO',
+  'THREE',
+  'FOUR',
+  'FIVE',
+  'SIX',
+  'SEVEN',
+  'EIGHT',
+  'NINE',
+  'TEN',
+  'ELEVEN',
+  'TWELVE',
+  'THIRTEEN',
+  'FOURTEEN',
+  'FIFTEEN',
+  'SIXTEEN',
+  'SEVENTEEN',
+  'EIGHTEEN',
+  'NINETEEN',
+  'TWENTY',
 ];
 
 String _word(int n) => n >= 0 && n < _words.length ? _words[n] : '$n';
@@ -133,17 +167,20 @@ class _ShelfRow extends StatelessWidget {
     required this.finished,
     required this.reading,
     required this.abandoned,
+    required this.maxHeight,
   });
   final List<ShelfEntry> finished;
   final List<ShelfEntry> reading;
   final List<ShelfEntry> abandoned;
+  final double maxHeight;
 
-  static const double _maxHeight = 150;
+  static const double _sidePadding = 24;
 
   @override
   Widget build(BuildContext context) {
+    final empty = finished.isEmpty && reading.isEmpty && abandoned.isEmpty;
     return SizedBox(
-      height: _maxHeight + 40,
+      height: maxHeight + 40,
       child: Stack(
         children: [
           // Flat lamp warmth, no gradient (spec §2.5).
@@ -161,73 +198,78 @@ class _ShelfRow extends StatelessWidget {
             bottom: 18,
             child: Container(
               height: 8,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: Tokens.surfaceAlt,
-                border: Border(
-                  top: BorderSide(color: Tokens.outline, width: 3),
-                  bottom: BorderSide(color: Tokens.outline, width: 3),
-                ),
+                border: Border(top: pixelSide(), bottom: pixelSide()),
               ),
             ),
           ),
           Positioned.fill(
             bottom: 26,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              // An empty shelf shows its one slot in the middle of the plank,
-              // not tucked in a corner.
-              children: [
-                if (finished.isEmpty && reading.isEmpty && abandoned.isEmpty)
-                  SizedBox(
-                      width: (MediaQuery.sizeOf(context).width - 48 - 26) / 2),
-                for (final e in finished.reversed) ...[
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: GestureDetector(
-                      onTap: () => context.push('/book/${e.session.id}'),
-                      child: SolidSpine(
-                          bookId: e.book.id, maxHeight: _maxHeight),
+            child: LayoutBuilder(
+              builder: (context, c) => ListView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: _sidePadding),
+                // An empty shelf shows its one slot in the middle of the plank,
+                // not tucked in a corner.
+                children: [
+                  if (empty)
+                    SizedBox(
+                      width:
+                          (c.maxWidth - 2 * _sidePadding - EmptySlot.width) / 2,
                     ),
-                  ),
-                  const SizedBox(width: 6),
-                ],
-                for (final e in abandoned.reversed) ...[
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: GestureDetector(
-                      onTap: () => context.push('/book/${e.session.id}'),
-                      child: Opacity(
-                        opacity: 0.55,
+                  for (final e in finished.reversed) ...[
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: GestureDetector(
+                        onTap: () => context.push('/book/${e.session.id}'),
                         child: SolidSpine(
-                            bookId: e.book.id, maxHeight: _maxHeight),
+                          bookId: e.book.id,
+                          maxHeight: maxHeight,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 6),
-                ],
-                for (final e in reading) ...[
+                    const SizedBox(width: 6),
+                  ],
+                  for (final e in abandoned.reversed) ...[
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: GestureDetector(
+                        onTap: () => context.push('/book/${e.session.id}'),
+                        child: Opacity(
+                          opacity: 0.55,
+                          child: SolidSpine(
+                            bookId: e.book.id,
+                            maxHeight: maxHeight,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                  ],
+                  for (final e in reading) ...[
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: GestureDetector(
+                        onTap: () => context.push('/book/${e.session.id}'),
+                        child: ProgressSpine(
+                          bookId: e.book.id,
+                          maxHeight: maxHeight,
+                          progress: e.session.progress,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                  ],
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: GestureDetector(
-                      onTap: () => context.push('/book/${e.session.id}'),
-                      child: ProgressSpine(
-                        bookId: e.book.id,
-                        maxHeight: _maxHeight,
-                        progress: e.session.progress,
-                      ),
+                      onTap: () => context.push('/add'),
+                      child: EmptySlot(maxHeight: maxHeight),
                     ),
                   ),
-                  const SizedBox(width: 6),
                 ],
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: GestureDetector(
-                    onTap: () => context.push('/add'),
-                    child: const EmptySlot(maxHeight: _maxHeight),
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
         ],
@@ -251,18 +293,23 @@ class _WhenYouFinish extends StatelessWidget {
         children: [
           Text('WHEN YOU FINISH ONE', style: pix(size: 12, color: Tokens.rose)),
           const SizedBox(height: 6),
-          Text('Three questions, under two minutes, all skippable. '
-              'Your answer to the second one becomes a card you can send.',
-              style: body(size: 15, color: Tokens.dim)),
+          Text(
+            'Three questions, under two minutes, all skippable. '
+            'Your answer to the second one becomes a card you can send.',
+            style: body(size: 15, color: Tokens.dim),
+          ),
           const SizedBox(height: 12),
           for (final p in prompts)
             Padding(
               padding: const EdgeInsets.only(bottom: 4),
-              child: Text(p.title,
-                  style: body(
-                      size: 15.5,
-                      weight: FontWeight.w600,
-                      color: p.optional ? Tokens.dim : Tokens.cream)),
+              child: Text(
+                p.title,
+                style: body(
+                  size: 15.5,
+                  weight: FontWeight.w600,
+                  color: p.optional ? Tokens.dim : Tokens.cream,
+                ),
+              ),
             ),
         ],
       ),
@@ -306,14 +353,18 @@ class _ShelfListTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(entry.book.title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: body(size: 16.5, weight: FontWeight.w600)),
-                  Text(entry.book.author,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: body(size: 14, color: Tokens.dim)),
+                  Text(
+                    entry.book.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: body(size: 16.5, weight: FontWeight.w600),
+                  ),
+                  Text(
+                    entry.book.author,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: body(size: 14, color: Tokens.dim),
+                  ),
                 ],
               ),
             ),

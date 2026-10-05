@@ -54,6 +54,6 @@ const Map<String, Prompt> promptsByKey = {
 
 /// The finishing flow. The abandon variant swaps the first prompt.
 List<Prompt> promptsFor(SessionStatus status) => switch (status) {
-      SessionStatus.abandoned => const [promptStopped, promptWho, promptChanged],
-      _ => const [promptStayed, promptWho, promptChanged],
-    };
+  SessionStatus.abandoned => const [promptStopped, promptWho, promptChanged],
+  _ => const [promptStayed, promptWho, promptChanged],
+};

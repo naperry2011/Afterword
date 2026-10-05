@@ -47,10 +47,12 @@ class Repository {
     ]);
     return q.watch().map((rows) {
       final entries = rows
-          .map((r) => ShelfEntry(
-                session: r.readTable(db.readingSessions),
-                book: r.readTable(db.books),
-              ))
+          .map(
+            (r) => ShelfEntry(
+              session: r.readTable(db.readingSessions),
+              book: r.readTable(db.books),
+            ),
+          )
           .toList();
       entries.sort((a, b) {
         final sa = _statusRank(a.session.status);
@@ -65,10 +67,10 @@ class Repository {
   }
 
   int _statusRank(SessionStatus s) => switch (s) {
-        SessionStatus.reading => 0,
-        SessionStatus.finished => 1,
-        SessionStatus.abandoned => 2,
-      };
+    SessionStatus.reading => 0,
+    SessionStatus.finished => 1,
+    SessionStatus.abandoned => 2,
+  };
 
   // ---- Sessions ----------------------------------------------------------
 
@@ -76,13 +78,19 @@ class Repository {
   /// its reflections change. Watching the session row alone missed new
   /// reflections, which left the Card showing "No card yet".
   Stream<SessionDetail?> watchSession(String sessionId) {
-    final q = db.select(db.readingSessions).join([
-      innerJoin(db.books, db.books.id.equalsExp(db.readingSessions.bookId)),
-      leftOuterJoin(db.reflections,
-          db.reflections.sessionId.equalsExp(db.readingSessions.id)),
-    ])
-      ..where(db.readingSessions.id.equals(sessionId))
-      ..orderBy([OrderingTerm.asc(db.reflections.created)]);
+    final q =
+        db.select(db.readingSessions).join([
+            innerJoin(
+              db.books,
+              db.books.id.equalsExp(db.readingSessions.bookId),
+            ),
+            leftOuterJoin(
+              db.reflections,
+              db.reflections.sessionId.equalsExp(db.readingSessions.id),
+            ),
+          ])
+          ..where(db.readingSessions.id.equals(sessionId))
+          ..orderBy([OrderingTerm.asc(db.reflections.created)]);
 
     return q.watch().map((rows) {
       if (rows.isEmpty) return null;
@@ -93,7 +101,10 @@ class Repository {
           .whereType<Reflection>()
           .toList();
       return SessionDetail(
-          session: session, book: book, reflections: reflections);
+        session: session,
+        book: book,
+        reflections: reflections,
+      );
     });
   }
 
@@ -113,41 +124,55 @@ class Repository {
     final bookId = newId();
     final sessionId = newId();
     await db.transaction(() async {
-      await db.into(db.books).insert(BooksCompanion.insert(
-            id: bookId,
-            title: title.trim(),
-            author: author.trim(),
-            coverRef: Value(coverRef),
-            openLibraryKey: Value(openLibraryKey),
-            year: Value(year),
-            source: source,
-            createdAt: now,
-          ));
-      await db.into(db.readingSessions).insert(ReadingSessionsCompanion.insert(
-            id: sessionId,
-            bookId: bookId,
-            status: SessionStatus.reading,
-            started: now,
-          ));
+      await db
+          .into(db.books)
+          .insert(
+            BooksCompanion.insert(
+              id: bookId,
+              title: title.trim(),
+              author: author.trim(),
+              coverRef: Value(coverRef),
+              openLibraryKey: Value(openLibraryKey),
+              year: Value(year),
+              source: source,
+              createdAt: now,
+            ),
+          );
+      await db
+          .into(db.readingSessions)
+          .insert(
+            ReadingSessionsCompanion.insert(
+              id: sessionId,
+              bookId: bookId,
+              status: SessionStatus.reading,
+              started: now,
+            ),
+          );
     });
     return sessionId;
   }
 
   Future<void> setStatus(String sessionId, SessionStatus status) async {
     final ended = status == SessionStatus.reading ? null : DateTime.now();
-    await (db.update(db.readingSessions)..where((s) => s.id.equals(sessionId)))
-        .write(ReadingSessionsCompanion(
-      status: Value(status),
-      ended: Value(ended),
-      progress: status == SessionStatus.finished
-          ? const Value(100)
-          : const Value.absent(),
-    ));
+    await (db.update(
+      db.readingSessions,
+    )..where((s) => s.id.equals(sessionId))).write(
+      ReadingSessionsCompanion(
+        status: Value(status),
+        ended: Value(ended),
+        progress: status == SessionStatus.finished
+            ? const Value(100)
+            : const Value.absent(),
+      ),
+    );
   }
 
   Future<void> setProgress(String sessionId, int progress) async {
-    await (db.update(db.readingSessions)..where((s) => s.id.equals(sessionId)))
-        .write(ReadingSessionsCompanion(progress: Value(progress.clamp(0, 100))));
+    await (db.update(
+      db.readingSessions,
+    )..where((s) => s.id.equals(sessionId))).write(
+      ReadingSessionsCompanion(progress: Value(progress.clamp(0, 100))),
+    );
   }
 
   Future<void> setAbandonReason(String sessionId, String? reason) async {
@@ -157,23 +182,26 @@ class Repository {
 
   Future<void> deleteSession(String sessionId) async {
     await db.transaction(() async {
-      final session = await (db.select(db.readingSessions)
-            ..where((s) => s.id.equals(sessionId)))
-          .getSingleOrNull();
+      final session = await (db.select(
+        db.readingSessions,
+      )..where((s) => s.id.equals(sessionId))).getSingleOrNull();
       if (session == null) return;
-      await (db.delete(db.cards)..where((c) => c.sessionId.equals(sessionId)))
-          .go();
-      await (db.delete(db.reflections)
-            ..where((r) => r.sessionId.equals(sessionId)))
-          .go();
-      await (db.delete(db.readingSessions)..where((s) => s.id.equals(sessionId)))
-          .go();
-      final others = await (db.select(db.readingSessions)
-            ..where((s) => s.bookId.equals(session.bookId)))
-          .get();
+      await (db.delete(
+        db.cards,
+      )..where((c) => c.sessionId.equals(sessionId))).go();
+      await (db.delete(
+        db.reflections,
+      )..where((r) => r.sessionId.equals(sessionId))).go();
+      await (db.delete(
+        db.readingSessions,
+      )..where((s) => s.id.equals(sessionId))).go();
+      final others = await (db.select(
+        db.readingSessions,
+      )..where((s) => s.bookId.equals(session.bookId))).get();
       if (others.isEmpty) {
-        await (db.delete(db.books)..where((b) => b.id.equals(session.bookId)))
-            .go();
+        await (db.delete(
+          db.books,
+        )..where((b) => b.id.equals(session.bookId))).go();
       }
     });
   }
@@ -182,32 +210,43 @@ class Repository {
 
   /// Upserts one row per answered prompt. Empty responses are removed.
   Future<void> saveReflections(
-      String sessionId, Map<String, String> responses) async {
+    String sessionId,
+    Map<String, String> responses,
+  ) async {
     final now = DateTime.now();
     await db.transaction(() async {
       for (final entry in responses.entries) {
         final key = entry.key;
         final text = entry.value.trim();
-        final existing = await (db.select(db.reflections)
-              ..where((r) => r.sessionId.equals(sessionId) & r.promptKey.equals(key)))
-            .getSingleOrNull();
+        final existing =
+            await (db.select(db.reflections)..where(
+                  (r) =>
+                      r.sessionId.equals(sessionId) & r.promptKey.equals(key),
+                ))
+                .getSingleOrNull();
         if (text.isEmpty) {
           if (existing != null) {
-            await (db.delete(db.reflections)..where((r) => r.id.equals(existing.id)))
-                .go();
+            await (db.delete(
+              db.reflections,
+            )..where((r) => r.id.equals(existing.id))).go();
           }
           continue;
         }
         if (existing == null) {
-          await db.into(db.reflections).insert(ReflectionsCompanion.insert(
-                id: newId(),
-                sessionId: sessionId,
-                promptKey: key,
-                response: text,
-                created: now,
-              ));
+          await db
+              .into(db.reflections)
+              .insert(
+                ReflectionsCompanion.insert(
+                  id: newId(),
+                  sessionId: sessionId,
+                  promptKey: key,
+                  response: text,
+                  created: now,
+                ),
+              );
         } else {
-          await (db.update(db.reflections)..where((r) => r.id.equals(existing.id)))
+          await (db.update(db.reflections)
+                ..where((r) => r.id.equals(existing.id)))
               .write(ReflectionsCompanion(response: Value(text)));
         }
       }
@@ -216,28 +255,35 @@ class Repository {
 
   // ---- Cards -------------------------------------------------------------
 
-  Future<void> recordCard(String sessionId, List<String> reflectionIds,
-      {String theme = 'cream'}) async {
-    await db.into(db.cards).insertOnConflictUpdate(CardsCompanion.insert(
-          sessionId: sessionId,
-          theme: theme,
-          reflectionIds: jsonEncode(reflectionIds),
-          generatedAt: DateTime.now(),
-        ));
+  Future<void> recordCard(
+    String sessionId,
+    List<String> reflectionIds, {
+    String theme = 'cream',
+  }) async {
+    await db
+        .into(db.cards)
+        .insertOnConflictUpdate(
+          CardsCompanion.insert(
+            sessionId: sessionId,
+            theme: theme,
+            reflectionIds: jsonEncode(reflectionIds),
+            generatedAt: DateTime.now(),
+          ),
+        );
   }
 
   // ---- Meta --------------------------------------------------------------
 
   Future<String?> getMeta(String key) async {
-    final row = await (db.select(db.appMeta)..where((m) => m.key.equals(key)))
-        .getSingleOrNull();
+    final row = await (db.select(
+      db.appMeta,
+    )..where((m) => m.key.equals(key))).getSingleOrNull();
     return row?.value;
   }
 
-  Future<void> setMeta(String key, String value) =>
-      db.into(db.appMeta).insertOnConflictUpdate(
-            AppMetaCompanion.insert(key: key, value: value),
-          );
+  Future<void> setMeta(String key, String value) => db
+      .into(db.appMeta)
+      .insertOnConflictUpdate(AppMetaCompanion.insert(key: key, value: value));
 
   // ---- Export / import ---------------------------------------------------
 
@@ -268,7 +314,8 @@ class Repository {
     final schema = json['schema'] as int? ?? 0;
     if (schema > exportSchema) {
       throw FormatException(
-          'This export is from a newer version of Afterword (schema $schema).');
+        'This export is from a newer version of Afterword (schema $schema).',
+      );
     }
     final books = (json['books'] as List<dynamic>? ?? const [])
         .map((b) => Book.fromJson(b as Map<String, dynamic>))

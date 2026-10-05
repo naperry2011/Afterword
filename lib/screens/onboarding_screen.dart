@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../data/providers.dart';
+import '../theme/layout.dart';
 import '../theme/text.dart';
 import '../theme/tokens.dart';
 import '../widgets/onboarding_art.dart';
@@ -35,7 +36,11 @@ const _pages = [
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   late int _index = widget.initialPage.clamp(0, _pages.length - 1);
 
-  static const _art = [MiniShelf(), MiniPrompts(), MiniCard()];
+  Widget _artFor(int index, Fit fit) => switch (index) {
+    0 => MiniShelf(spineHeight: fit.hero(96)),
+    1 => const MiniPrompts(),
+    _ => const MiniCard(),
+  };
 
   Future<void> _done() async {
     await ref.read(repositoryProvider).setMeta(onboardingSeenKey, 'true');
@@ -47,6 +52,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   Widget build(BuildContext context) {
     final (title, text) = _pages[_index];
     final last = _index == _pages.length - 1;
+    final fit = Fit.of(context);
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -71,26 +77,34 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   QuietButton(label: 'Skip', onPressed: _done),
                 ],
               ),
-              // Scrolls at large Dynamic Type instead of overflowing; sits
-              // low on the screen otherwise.
+              // Scrolls at large Dynamic Type instead of overflowing. Otherwise
+              // the block sits a little above centre, with more room below it
+              // than above, so tall screens don't leave it floating low.
               Expanded(
                 child: LayoutBuilder(
                   builder: (context, c) => SingleChildScrollView(
                     child: ConstrainedBox(
                       constraints: BoxConstraints(minHeight: c.maxHeight),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _art[_index],
-                          const SizedBox(height: 32),
-                          Text(title,
-                              style: pix(size: 32, weight: FontWeight.w600)),
-                          const SizedBox(height: 14),
-                          Text(text,
-                              style: body(size: 17.5, color: Tokens.dim)),
-                          const SizedBox(height: 24),
-                        ],
+                      child: IntrinsicHeight(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Spacer(flex: 2),
+                            _artFor(_index, fit),
+                            SizedBox(height: fit.hero(32)),
+                            Text(
+                              title,
+                              style: pix(size: 32, weight: FontWeight.w600),
+                            ),
+                            SizedBox(height: fit.hero(14)),
+                            Text(
+                              text,
+                              style: body(size: 17.5, color: Tokens.dim),
+                            ),
+                            const SizedBox(height: 24),
+                            const Spacer(flex: 3),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -99,8 +113,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               PixelButton(
                 label: last ? 'Start tonight' : 'Next',
                 expand: true,
-                onPressed: () =>
-                    last ? _done() : setState(() => _index++),
+                onPressed: () => last ? _done() : setState(() => _index++),
               ),
             ],
           ),

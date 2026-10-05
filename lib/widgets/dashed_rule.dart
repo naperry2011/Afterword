@@ -26,9 +26,7 @@ class DashedRule extends StatelessWidget {
       child: SizedBox(
         height: thickness,
         width: double.infinity,
-        child: CustomPaint(
-          painter: _DashPainter(color, thickness, dash, gap),
-        ),
+        child: CustomPaint(painter: _DashPainter(color, thickness, dash, gap)),
       ),
     );
   }

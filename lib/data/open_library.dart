@@ -74,15 +74,17 @@ class OpenLibrary {
         final title = doc['title'] as String?;
         if (title == null || title.isEmpty) continue;
         final authors = doc['author_name'] as List<dynamic>?;
-        hits.add(BookHit(
-          key: doc['key'] as String? ?? '',
-          title: title,
-          author: authors == null || authors.isEmpty
-              ? 'Unknown author'
-              : authors.first as String,
-          year: doc['first_publish_year'] as int?,
-          coverId: doc['cover_i'] as int?,
-        ));
+        hits.add(
+          BookHit(
+            key: doc['key'] as String? ?? '',
+            title: title,
+            author: authors == null || authors.isEmpty
+                ? 'Unknown author'
+                : authors.first as String,
+            year: doc['first_publish_year'] as int?,
+            coverId: doc['cover_i'] as int?,
+          ),
+        );
       }
       return SearchSuccess(hits);
     } on Exception catch (e) {

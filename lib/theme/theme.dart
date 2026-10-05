@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'shapes.dart';
 import 'text.dart';
@@ -29,6 +30,17 @@ class _Steps extends Curve {
   @override
   double transformInternal(double t) => (t * steps).floor() / steps;
 }
+
+/// Light status and nav bar icons over the dark room; bars stay transparent
+/// so Android's edge-to-edge shows the room colour behind them.
+const SystemUiOverlayStyle kSystemBars = SystemUiOverlayStyle(
+  statusBarColor: Color(0x00000000),
+  statusBarIconBrightness: Brightness.light,
+  statusBarBrightness: Brightness.dark,
+  systemNavigationBarColor: Color(0x00000000),
+  systemNavigationBarIconBrightness: Brightness.light,
+  systemNavigationBarContrastEnforced: false,
+);
 
 ThemeData buildTheme() {
   final text = buildTextTheme();
@@ -68,9 +80,8 @@ ThemeData buildTheme() {
       scrolledUnderElevation: 0,
       centerTitle: false,
       titleTextStyle: text.titleLarge,
-      shape: const Border(
-        bottom: BorderSide(color: Tokens.outline, width: Tokens.outlineWidth),
-      ),
+      systemOverlayStyle: kSystemBars,
+      shape: Border(bottom: pixelSide()),
     ),
     cardTheme: const CardThemeData(
       color: Tokens.surface,
@@ -98,17 +109,17 @@ ThemeData buildTheme() {
       hintStyle: body(color: Tokens.dim),
       labelStyle: pix(size: 14, color: Tokens.dim),
       contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 13),
-      border: const OutlineInputBorder(
+      border: OutlineInputBorder(
         borderRadius: kNoRadius,
-        borderSide: BorderSide(color: Tokens.outline, width: Tokens.outlineWidth),
+        borderSide: pixelSide(),
       ),
-      enabledBorder: const OutlineInputBorder(
+      enabledBorder: OutlineInputBorder(
         borderRadius: kNoRadius,
-        borderSide: BorderSide(color: Tokens.outline, width: Tokens.outlineWidth),
+        borderSide: pixelSide(),
       ),
-      focusedBorder: const OutlineInputBorder(
+      focusedBorder: OutlineInputBorder(
         borderRadius: kNoRadius,
-        borderSide: BorderSide(color: Tokens.rose, width: Tokens.outlineWidth),
+        borderSide: pixelSide(Tokens.rose),
       ),
     ),
     sliderTheme: const SliderThemeData(
@@ -119,7 +130,10 @@ ThemeData buildTheme() {
       trackHeight: 6,
       thumbShape: RoundSliderThumbShape(enabledThumbRadius: 9),
     ),
-    dividerTheme: const DividerThemeData(color: Tokens.surfaceAlt, thickness: 2),
+    dividerTheme: const DividerThemeData(
+      color: Tokens.surfaceAlt,
+      thickness: 2,
+    ),
     textSelectionTheme: const TextSelectionThemeData(
       cursorColor: Tokens.amber,
       selectionColor: Tokens.surfaceAlt,

@@ -15,6 +15,7 @@ class BookCover extends StatelessWidget {
     required this.author,
     this.coverUrl,
     this.width = 96,
+    this.snapToDevice = true,
   });
 
   final String bookId;
@@ -23,6 +24,14 @@ class BookCover extends StatelessWidget {
   final String? coverUrl;
   final double width;
 
+  /// False inside the share card, which renders at a fixed 2x and must come
+  /// out the same on every device.
+  final bool snapToDevice;
+
+  Border get _border => snapToDevice
+      ? pixelBorder()
+      : Border.all(color: Tokens.outline, width: Tokens.outlineWidth);
+
   double get height => width * 1.5;
 
   @override
@@ -30,21 +39,21 @@ class BookCover extends StatelessWidget {
     // A cover is an image: it ignores Dynamic Type so it never overflows its
     // own frame, and it renders identically inside the share card.
     final fallback = MediaQuery(
-      data: MediaQuery.of(context)
-          .copyWith(textScaler: TextScaler.noScaling),
+      data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
       child: _TypographicCover(
         bookId: bookId,
         title: title,
         author: author,
         width: width,
         height: height,
+        border: _border,
       ),
     );
     final url = coverUrl;
     return Container(
       width: width,
       height: height,
-      decoration: BoxDecoration(border: pixelBorder()),
+      decoration: BoxDecoration(border: _border),
       clipBehavior: Clip.hardEdge,
       child: url == null
           ? fallback
@@ -67,6 +76,7 @@ class _TypographicCover extends StatelessWidget {
     required this.author,
     required this.width,
     required this.height,
+    required this.border,
   });
 
   final String bookId;
@@ -74,6 +84,7 @@ class _TypographicCover extends StatelessWidget {
   final String author;
   final double width;
   final double height;
+  final Border border;
 
   @override
   Widget build(BuildContext context) {
@@ -90,10 +101,7 @@ class _TypographicCover extends StatelessWidget {
           Container(
             width: 14 * scale,
             height: 14 * scale,
-            decoration: BoxDecoration(
-              color: Tokens.outline,
-              border: pixelBorder(),
-            ),
+            decoration: BoxDecoration(color: Tokens.outline, border: border),
           ),
           const Spacer(),
           Text(

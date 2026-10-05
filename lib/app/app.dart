@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../theme/theme.dart';
@@ -19,11 +20,14 @@ class AfterwordApp extends ConsumerWidget {
       // stops fitting the screens we designed; body copy stays readable.
       builder: (context, child) {
         final mq = MediaQuery.of(context);
-        return MediaQuery(
-          data: mq.copyWith(
-            textScaler: mq.textScaler.clamp(maxScaleFactor: 1.6),
+        return AnnotatedRegion<SystemUiOverlayStyle>(
+          value: kSystemBars,
+          child: MediaQuery(
+            data: mq.copyWith(
+              textScaler: mq.textScaler.clamp(maxScaleFactor: 1.6),
+            ),
+            child: child!,
           ),
-          child: child!,
         );
       },
     );

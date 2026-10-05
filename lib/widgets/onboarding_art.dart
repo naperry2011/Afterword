@@ -13,21 +13,22 @@ import 'spine.dart';
 
 /// A short shelf: three finished spines, one in progress, one waiting.
 class MiniShelf extends StatelessWidget {
-  const MiniShelf({super.key});
+  const MiniShelf({super.key, this.spineHeight = 96});
 
-  static const double _h = 96;
+  final double spineHeight;
 
   @override
   Widget build(BuildContext context) {
+    final h = spineHeight;
     return SizedBox(
-      height: _h + 22,
+      height: h + 22,
       child: Stack(
         children: [
           Positioned(
             left: 0,
             top: 0,
             bottom: 0,
-            width: 48,
+            width: h / 2,
             child: Container(color: Tokens.amber.withValues(alpha: 0.10)),
           ),
           Positioned(
@@ -36,12 +37,9 @@ class MiniShelf extends StatelessWidget {
             bottom: 8,
             child: Container(
               height: 8,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: Tokens.surfaceAlt,
-                border: Border(
-                  top: BorderSide(color: Tokens.outline, width: 3),
-                  bottom: BorderSide(color: Tokens.outline, width: 3),
-                ),
+                border: Border(top: pixelSide(), bottom: pixelSide()),
               ),
             ),
           ),
@@ -50,20 +48,20 @@ class MiniShelf extends StatelessWidget {
             bottom: 16,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
-              children: const [
-                SolidSpine(bookId: 'onboarding-a', maxHeight: _h),
-                SizedBox(width: 6),
-                SolidSpine(bookId: 'onboarding-b', maxHeight: _h),
-                SizedBox(width: 6),
-                SolidSpine(bookId: 'onboarding-c', maxHeight: _h),
-                SizedBox(width: 6),
+              children: [
+                SolidSpine(bookId: 'onboarding-a', maxHeight: h),
+                const SizedBox(width: 6),
+                SolidSpine(bookId: 'onboarding-b', maxHeight: h),
+                const SizedBox(width: 6),
+                SolidSpine(bookId: 'onboarding-c', maxHeight: h),
+                const SizedBox(width: 6),
                 ProgressSpine(
                   bookId: 'onboarding-d',
-                  maxHeight: _h,
+                  maxHeight: h,
                   progress: 55,
                 ),
-                SizedBox(width: 6),
-                EmptySlot(maxHeight: _h),
+                const SizedBox(width: 6),
+                EmptySlot(maxHeight: h),
               ],
             ),
           ),

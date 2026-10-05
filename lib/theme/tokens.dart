@@ -46,7 +46,14 @@ abstract final class Tokens {
   static const Color ruleOnCream = Color(0xFFCFC2A8);
 
   /// Spine palette, cycled deterministically from the book id.
-  static const List<Color> spinePalette = [rose, sage, amber, plum, cream, teal];
+  static const List<Color> spinePalette = [
+    rose,
+    sage,
+    amber,
+    plum,
+    cream,
+    teal,
+  ];
 
   static const double outlineWidth = 3;
   static const Offset shadowOffset = Offset(5, 5);

@@ -38,8 +38,8 @@ Apple Developer enrollment is active (confirmed 2026-09-08).
 
 | Platform | Version built | Status | Last updated | Next |
 |---|---|---|---|---|
-| iOS | 1.0.0+1 (not submitted) | Never submitted. The Sept 14 deadline was missed; the dates table above is historical | 2026-10-05 | Signed release build, TestFlight external testers, submit |
-| Android | none | Flutter 3.44.2, Git, Android Studio installed; analyze clean and 7/7 tests pass on Windows. Android SDK downloading | 2026-10-05 | Accept SDK licences, first emulator run, set launcher icon and portrait lock |
+| iOS | 1.0.0+1 (not submitted) | Never submitted. The Sept 14 deadline was missed; the dates table above is historical | 2026-10-05 | Rebuild with the 2026-10-05 responsive layout pass (shared code, not yet run on iOS): check 16e, 17 Pro, and 17 Pro Max (heroScale ~1.1 there, so store shots will shift). Then signed release build, TestFlight, submit |
+| Android | 1.0.0+1 (debug APK) | Responsive layout pass applied and screenshotted on `Medium_Phone_API_37.0` (onboarding, shelf, book, reflect, card). Analyze clean, 12/12 tests pass. Not yet release-built | 2026-10-05 | Set launcher icon and portrait lock, walk the full flow by hand, release build |
 
 ## Stack
 

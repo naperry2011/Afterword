@@ -29,3 +29,12 @@ Dated. Append only. If a decision is reversed, add a new entry that says so.
 - **Both platforms share one version.** `pubspec.yaml` `version:` drives both store builds. Each platform's progress is tracked in the "Machines and platform status" table in `CLAUDE.md`, updated after every build or store change.
 - **The Windows checkout moved to `C:\dev\Afterword`.** Under `OneDrive\Documents`, `flutter pub get` failed every time: it could not delete `ios/Flutter/ephemeral/Packages/.packages` while OneDrive held it. The same commands pass from `C:\dev`. Keep Flutter repos on this PC out of OneDrive, and keep paths short: a deeply nested copy broke the generated SwiftPM paths on the 260-character Windows path limit.
 - **Flutter is pinned to 3.44.2 on both machines,** the version the project was created with and the one `build_runner` 2.15 was pinned for. Upgrade both machines together.
+
+## 2026-10-05 · Responsive layouts for tall screens
+
+- **One sizing helper, `Fit` in `lib/theme/layout.dart`.** `heroScale` is usable height / 780 (a 16e), clamped 1.0 to 1.25. It scales hero elements only: onboarding shelf art, shelf spine height, the book cover, and the gaps around them. Type stays on the fixed `pix()`/`body()` scale. iPhones up to the 17 Pro get 1.0; the 17 Pro Max and tall Android phones get about 1.1.
+- **Spine widths stay fixed per book id.** Only height follows the shelf, so the standing rule on stable spine geometry holds.
+- **Outlines snap to whole device pixels (`PixelGrid`)** so 3px borders stay crisp at Android's 2.625 density. The share card's cover opts out, so the PNG is still identical on every device.
+- **Onboarding sits above centre** (spacer flex 2 above, 3 below) instead of centred. **Reflect's answer field grows into spare height** (5 to 12 lines) instead of leaving a gap above Skip/Next.
+- **System bars:** transparent with light icons on both platforms; Android launch and window backgrounds are the room colour instead of white.
+- **The repo is now `dart format`ted** (Dart 3.12 tall style). It had never been formatted; this was a one-time pass, so later diffs stay small if the formatter is run on each change.

@@ -28,17 +28,18 @@ class EmptyState extends StatelessWidget {
           children: [
             const SizedBox(width: 56, height: 84, child: DitherFill()),
             const SizedBox(height: 22),
-            Text(title,
-                textAlign: TextAlign.center,
-                style: pix(size: 22, weight: FontWeight.w600)),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: pix(size: 22, weight: FontWeight.w600),
+            ),
             const SizedBox(height: 8),
-            Text(message,
-                textAlign: TextAlign.center,
-                style: body(size: 16, color: Tokens.dim)),
-            if (action != null) ...[
-              const SizedBox(height: 24),
-              action!,
-            ],
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: body(size: 16, color: Tokens.dim),
+            ),
+            if (action != null) ...[const SizedBox(height: 24), action!],
           ],
         ),
       ),
