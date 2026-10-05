@@ -1,6 +1,6 @@
 # Afterword
 
-A private, reflection-first reading journal with shareable recommendation cards. Flutter, iOS first, Android deferred. Local-only, no account, no server.
+A private, reflection-first reading journal with shareable recommendation cards. Flutter. iOS builds on the MacBook, Android builds on the Windows PC. Local-only, no account, no server.
 
 **The one sentence:** a person adds the book they're reading, marks it finished, answers three questions in under ninety seconds, and texts a friend a card that makes that friend want to read it. Everything else exists to protect that sentence.
 
@@ -24,6 +24,22 @@ A private, reflection-first reading journal with shareable recommendation cards.
 | Sept 17 | Live |
 
 Apple Developer enrollment is active (confirmed 2026-09-08).
+
+## Machines and platform status
+
+| Machine | Platform | Repo path | Builds |
+|---|---|---|---|
+| Windows PC (default) | Android | `C:\Users\perry\OneDrive\Documents\GitHub\Afterword` | Android emulator and release builds, analyze, tests, codegen |
+| MacBook | iOS | `~/dev/Afterword` (not under `~/Documents`, see decisions 2026-09-13) | Simulator runs, `flutter build ipa`, signing, TestFlight, App Store submission |
+
+- Assume the Windows PC and Android unless the user says they are on the MacBook. On the MacBook, work on iOS builds only.
+- Both platforms ship from the same `version:` in `pubspec.yaml`. Bump it on one machine, commit, and pull on the other before building, so each store gets the same version for the same code.
+- After any build, submission, or store status change, update the table below with the date and version. Shared code changes go in both rows' "Next" until each platform has been built with them.
+
+| Platform | Version built | Status | Last updated | Next |
+|---|---|---|---|---|
+| iOS | 1.0.0+1 (not submitted) | Never submitted. The Sept 14 deadline was missed; the dates table above is historical | 2026-10-05 | Signed release build, TestFlight external testers, submit |
+| Android | none | Toolchain not installed on the Windows PC (no Flutter SDK, no Android SDK) | 2026-10-05 | Install Flutter and Android Studio, first emulator run, set launcher icon and portrait lock |
 
 ## Stack
 
@@ -55,6 +71,11 @@ flutter build ipa                    # Sept 13 archive for App Store Connect
 flutter build ios --simulator --debug --dart-define=AFTERWORD_SEED=true --dart-define=AFTERWORD_START=card:finished
 # AFTERWORD_START: shelf | book:reading | book:finished | reflect:finished | card:finished
 # Then: xcrun simctl install <udid> build/ios/iphonesimulator/Runner.app && xcrun simctl launch <udid> com.nickperry.afterword
+
+# Android (Windows PC)
+flutter run -d emulator-5554         # Android emulator
+flutter build apk --release          # release compile check
+flutter build appbundle              # .aab for Google Play
 ```
 
 Store screenshots live in `docs/store/screenshots-6.9in/`. Privacy and support pages are `docs/site/privacy.html` and `docs/site/support.html`; they must be published at a live URL before submission.

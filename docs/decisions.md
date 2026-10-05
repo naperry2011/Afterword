@@ -21,3 +21,9 @@ Dated. Append only. If a decision is reversed, add a new entry that says so.
 - **Repo moved to `~/dev/Afterword`.** iCloud Desktop & Documents sync re-stamped Finder metadata on `build/` and codesign rejected the Flutter framework. Any Xcode project under `~/Documents` on this Mac will fail the same way.
 - **There is no physical iPhone available.** Device QA and the clean-device TestFlight install are replaced by: release-mode simulator runs on iPhone 17 Pro and iPhone 16e, and TestFlight external testers (the same three people testing the reflect prompts) as the first real-device coverage. Archive and upload happen from the Mac, which needs no device.
 - **`watchSession` now joins books and reflections** so drift re-emits on any change. Watching the session row alone left the Card showing "No card yet" straight after reflecting.
+
+## 2026-10-05 · Android is active, split by machine
+
+- **Android is no longer deferred.** This reverses "Android setup is skipped for now" from 2026-09-08.
+- **Each platform has its own machine.** Android builds on the Windows PC, which has more storage and power. iOS stays on the MacBook, because Xcode only runs on macOS. The Windows checkout lives under OneDrive; if sync interferes with Gradle builds, move it out of the synced tree.
+- **Both platforms share one version.** `pubspec.yaml` `version:` drives both store builds. Each platform's progress is tracked in the "Machines and platform status" table in `CLAUDE.md`, updated after every build or store change.
