@@ -111,7 +111,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           Text('PRIVACY', style: pix(size: 13, color: Tokens.rose)),
           const SizedBox(height: 8),
           Text(
-            'No account. No server. No analytics. The only network request is searching Open Library for a title, and the only thing that leaves the device is a card you choose to send.',
+            'No account. No server. No analytics. Afterword only goes online to search Open Library and load book covers from it. Nothing else leaves the device unless you send it: a card, or an export.',
             style: body(size: 15.5, color: Tokens.dim),
           ),
           const DashedRule(margin: EdgeInsets.symmetric(vertical: 28)),
