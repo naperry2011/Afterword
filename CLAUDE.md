@@ -29,7 +29,7 @@ Apple Developer enrollment is active (confirmed 2026-09-08).
 
 | Machine | Platform | Repo path | Builds |
 |---|---|---|---|
-| Windows PC (default) | Android | `C:\Users\perry\OneDrive\Documents\GitHub\Afterword` | Android emulator and release builds, analyze, tests, codegen |
+| Windows PC (default) | Android | `C:\dev\Afterword` (not under OneDrive, see decisions 2026-10-05). Flutter 3.44.2 at `C:\dev\flutter` | Android emulator and release builds, analyze, tests, codegen |
 | MacBook | iOS | `~/dev/Afterword` (not under `~/Documents`, see decisions 2026-09-13) | Simulator runs, `flutter build ipa`, signing, TestFlight, App Store submission |
 
 - Assume the Windows PC and Android unless the user says they are on the MacBook. On the MacBook, work on iOS builds only.
@@ -39,7 +39,7 @@ Apple Developer enrollment is active (confirmed 2026-09-08).
 | Platform | Version built | Status | Last updated | Next |
 |---|---|---|---|---|
 | iOS | 1.0.0+1 (not submitted) | Never submitted. The Sept 14 deadline was missed; the dates table above is historical | 2026-10-05 | Signed release build, TestFlight external testers, submit |
-| Android | none | Toolchain not installed on the Windows PC (no Flutter SDK, no Android SDK) | 2026-10-05 | Install Flutter and Android Studio, first emulator run, set launcher icon and portrait lock |
+| Android | none | Flutter 3.44.2, Git, Android Studio installed; analyze clean and 7/7 tests pass on Windows. Android SDK downloading | 2026-10-05 | Accept SDK licences, first emulator run, set launcher icon and portrait lock |
 
 ## Stack
 
