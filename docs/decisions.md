@@ -37,4 +37,6 @@ Dated. Append only. If a decision is reversed, add a new entry that says so.
 - **Outlines snap to whole device pixels (`PixelGrid`)** so 3px borders stay crisp at Android's 2.625 density. The share card's cover opts out, so the PNG is still identical on every device.
 - **Onboarding sits above centre** (spacer flex 2 above, 3 below) instead of centred. **Reflect's answer field grows into spare height** (5 to 12 lines) instead of leaving a gap above Skip/Next.
 - **System bars:** transparent with light icons on both platforms; Android launch and window backgrounds are the room colour instead of white.
+- **The main Android manifest declares `INTERNET`.** Flutter's template only adds it to the debug and profile manifests, so the first release build could not reach Open Library: search showed "Search didn't work" and covers fell back to type. Always smoke-test search on a release build.
+- **Android release signing reads `android/key.properties`** (upload key, gitignored, kept only on the Windows PC). Without it, release builds fall back to the debug key with a Gradle warning, which is fine for local checks and rejected by Play.
 - **The repo is now `dart format`ted** (Dart 3.12 tall style). It had never been formatted; this was a one-time pass, so later diffs stay small if the formatter is run on each change.

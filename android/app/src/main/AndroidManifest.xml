@@ -1,4 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Open Library search and covers. Debug builds get this from
+         src/debug; release needs it here or search fails silently. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:label="Afterword"
         android:name="${applicationName}"

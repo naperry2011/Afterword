@@ -12,6 +12,9 @@ const bool kSeedDummyData = bool.fromEnvironment('AFTERWORD_SEED');
 
 const _metaKey = 'seed.v1.applied';
 
+/// The finished book that gets seeded reflections and a card.
+const _showcase = 'Piranesi';
+
 /// Nine finished, one in progress. Matches the landing page count line.
 const _finished = [
   ('Piranesi', 'Susanna Clarke', 2020),
@@ -47,7 +50,12 @@ Future<String?> debugStartRoute(Repository repo) async {
   final want = parts[1] == 'reading'
       ? SessionStatus.reading
       : SessionStatus.finished;
-  final entry = shelf.where((e) => e.session.status == want).firstOrNull;
+  // Prefer the seeded book with reflections so store shots are repeatable;
+  // seed timestamps tie, so shelf order alone is not stable.
+  final matching = shelf.where((e) => e.session.status == want).toList();
+  final entry =
+      matching.where((e) => e.book.title == _showcase).firstOrNull ??
+      matching.firstOrNull;
   if (entry == null) return null;
   final id = entry.session.id;
   return switch (parts[0]) {
@@ -73,7 +81,7 @@ Future<void> applySeedIfEmpty(Repository repo) async {
       source: BookSource.manual,
     );
     await repo.setStatus(id, SessionStatus.finished);
-    if (title == 'Piranesi') {
+    if (title == _showcase) {
       await repo.saveReflections(id, {
         'stayed':
             'The tides. A house with an ocean in it, and the way he '

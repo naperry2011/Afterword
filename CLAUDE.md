@@ -39,7 +39,7 @@ Apple Developer enrollment is active (confirmed 2026-09-08).
 | Platform | Version built | Status | Last updated | Next |
 |---|---|---|---|---|
 | iOS | 1.0.0+1 (not submitted) | Never submitted. The Sept 14 deadline was missed; the dates table above is historical | 2026-10-05 | Rebuild with the 2026-10-05 responsive layout pass (shared code, not yet run on iOS): check 16e, 17 Pro, and 17 Pro Max (heroScale ~1.1 there, so store shots will shift). Then signed release build, TestFlight, submit |
-| Android | 1.0.0+1 (debug APK) | Responsive layout pass applied and screenshotted on `Medium_Phone_API_37.0` (onboarding, shelf, book, reflect, card). Analyze clean, 12/12 tests pass. Pixel lamp adaptive icon, label "Afterword", portrait lock. Full flow walked on the emulator (debug): onboarding, Open Library search, manual entry, progress, finish and abandon reflections, card share (1080x1350 PNG), export, remove and re-import, offline search failure. Not yet release-built | 2026-10-05 | Release build and upload signing key; then the same walk on the release build |
+| Android | 1.0.0+1 (debug APK) | Responsive layout pass applied and screenshotted on `Medium_Phone_API_37.0` (onboarding, shelf, book, reflect, card). Analyze clean, 12/12 tests pass. Pixel lamp adaptive icon, label "Afterword", portrait lock. Full flow walked on the emulator (debug): onboarding, Open Library search, manual entry, progress, finish and abandon reflections, card share (1080x1350 PNG), export, remove and re-import, offline search failure. Release APK and `.aab` build and run on the emulator (search, finish, reflect, card, share). `.aab` signed with the upload key (`C:\Users\perry\.android\afterword-upload.jks`, SHA-256 `8B:EA:73:2E:...:5C:11:31`) | 2026-10-05 | Play Console: create the app, store listing, Data safety form, upload the `.aab` to internal testing |
 
 ## Stack
 
@@ -78,7 +78,7 @@ flutter build apk --release          # release compile check
 flutter build appbundle              # .aab for Google Play
 ```
 
-Store screenshots live in `docs/store/screenshots-6.9in/`. Privacy and support pages are `docs/site/privacy.html` and `docs/site/support.html`; they must be published at a live URL before submission.
+Store screenshots live in `docs/store/screenshots-6.9in/` (iOS) and `docs/store/screenshots-android/` (Play: 1080x1920, 24-bit PNG, since Play rejects a long side more than twice the short side, so the emulator's 1080x2400 can't be used as-is; capture with `adb shell wm size 1080x1920` and SystemUI demo mode, then `wm size reset`). Privacy and support pages are `docs/site/privacy.html` and `docs/site/support.html`; they must be published at a live URL before submission.
 
 No physical iPhone is available (2026-09-13). QA runs on the simulators in release mode; TestFlight external testers are the real-device check.
 
