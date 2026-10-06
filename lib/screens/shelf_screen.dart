@@ -10,6 +10,7 @@ import '../theme/shapes.dart';
 import '../theme/text.dart';
 import '../theme/tokens.dart';
 import '../widgets/dashed_rule.dart';
+import '../widgets/lamp.dart';
 import '../data/prompts.dart';
 import '../widgets/pixel_button.dart';
 import '../widgets/pixel_panel.dart';
@@ -160,8 +161,9 @@ const _words = [
 
 String _word(int n) => n >= 0 && n < _words.length ? _words[n] : '$n';
 
-/// Horizontal row of spines on a dark ground, amber warmth at one edge as a
-/// flat band. Finished solid, reading outlined and partly filled, next dithered.
+/// Horizontal row of spines on a dark ground, the lamp standing at the left end
+/// of the plank. Finished solid, reading outlined and partly filled, next
+/// dithered.
 class _ShelfRow extends StatelessWidget {
   const _ShelfRow({
     required this.finished,
@@ -178,19 +180,10 @@ class _ShelfRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final empty = finished.isEmpty && reading.isEmpty && abandoned.isEmpty;
     return SizedBox(
       height: maxHeight + 40,
       child: Stack(
         children: [
-          // Flat lamp warmth, no gradient (spec §2.5).
-          Positioned(
-            left: 0,
-            top: 0,
-            bottom: 0,
-            width: 64,
-            child: Container(color: Tokens.amber.withValues(alpha: 0.10)),
-          ),
           // The shelf plank.
           Positioned(
             left: 0,
@@ -204,76 +197,128 @@ class _ShelfRow extends StatelessWidget {
               ),
             ),
           ),
+          // The lamp stays put at the left end of the plank. Books scroll
+          // beside it, opening at the newest end so the book in progress and
+          // the waiting slot are always in view.
           Positioned.fill(
             bottom: 26,
-            child: LayoutBuilder(
-              builder: (context, c) => ListView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: _sidePadding),
-                // An empty shelf shows its one slot in the middle of the plank,
-                // not tucked in a corner.
-                children: [
-                  if (empty)
-                    SizedBox(
-                      width:
-                          (c.maxWidth - 2 * _sidePadding - EmptySlot.width) / 2,
-                    ),
-                  for (final e in finished.reversed) ...[
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: GestureDetector(
-                        onTap: () => context.push('/book/${e.session.id}'),
-                        child: SolidSpine(
-                          bookId: e.book.id,
-                          maxHeight: maxHeight,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                  ],
-                  for (final e in abandoned.reversed) ...[
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: GestureDetector(
-                        onTap: () => context.push('/book/${e.session.id}'),
-                        child: Opacity(
-                          opacity: 0.55,
-                          child: SolidSpine(
-                            bookId: e.book.id,
-                            maxHeight: maxHeight,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                const SizedBox(width: _sidePadding),
+                PixelLamp(cell: maxHeight * 0.04),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _NewestFirstRun(
+                    children: [
+                      for (final e in finished.reversed) ...[
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: GestureDetector(
+                            onTap: () => context.push('/book/${e.session.id}'),
+                            child: SolidSpine(
+                              bookId: e.book.id,
+                              maxHeight: maxHeight,
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                  ],
-                  for (final e in reading) ...[
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: GestureDetector(
-                        onTap: () => context.push('/book/${e.session.id}'),
-                        child: ProgressSpine(
-                          bookId: e.book.id,
-                          maxHeight: maxHeight,
-                          progress: e.session.progress,
+                        const SizedBox(width: 6),
+                      ],
+                      for (final e in abandoned.reversed) ...[
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: GestureDetector(
+                            onTap: () => context.push('/book/${e.session.id}'),
+                            child: Opacity(
+                              opacity: 0.55,
+                              child: SolidSpine(
+                                bookId: e.book.id,
+                                maxHeight: maxHeight,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                      ],
+                      for (final e in reading) ...[
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: GestureDetector(
+                            onTap: () => context.push('/book/${e.session.id}'),
+                            child: ProgressSpine(
+                              bookId: e.book.id,
+                              maxHeight: maxHeight,
+                              progress: e.session.progress,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                      ],
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: GestureDetector(
+                          onTap: () => context.push('/add'),
+                          child: EmptySlot(maxHeight: maxHeight),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 6),
-                  ],
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: GestureDetector(
-                      onTap: () => context.push('/add'),
-                      child: EmptySlot(maxHeight: maxHeight),
-                    ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+/// A horizontal run of spines that opens scrolled to its far end, and jumps
+/// back there when a book is added. A jump, not an animation: stepped or none.
+class _NewestFirstRun extends StatefulWidget {
+  const _NewestFirstRun({required this.children});
+  final List<Widget> children;
+
+  @override
+  State<_NewestFirstRun> createState() => _NewestFirstRunState();
+}
+
+class _NewestFirstRunState extends State<_NewestFirstRun> {
+  final _controller = ScrollController();
+
+  void _jumpToEnd() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_controller.hasClients) {
+        _controller.jumpTo(_controller.position.maxScrollExtent);
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _jumpToEnd();
+  }
+
+  @override
+  void didUpdateWidget(_NewestFirstRun old) {
+    super.didUpdateWidget(old);
+    if (old.children.length != widget.children.length) _jumpToEnd();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      controller: _controller,
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.only(right: _ShelfRow._sidePadding),
+      children: widget.children,
     );
   }
 }

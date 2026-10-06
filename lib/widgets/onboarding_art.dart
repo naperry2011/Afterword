@@ -6,12 +6,14 @@ import '../theme/shapes.dart';
 import '../theme/text.dart';
 import '../theme/tokens.dart';
 import 'dashed_rule.dart';
+import 'lamp.dart';
 import 'spine.dart';
 
 /// Illustrations for the three onboarding pages, built from the app's own
 /// widgets so the first thing a person sees is the thing they will use.
 
-/// A short shelf: three finished spines, one in progress, one waiting.
+/// A short shelf: the lamp, three finished spines, one in progress, one
+/// waiting. The same arrangement as the real shelf.
 class MiniShelf extends StatelessWidget {
   const MiniShelf({super.key, this.spineHeight = 96});
 
@@ -24,13 +26,6 @@ class MiniShelf extends StatelessWidget {
       height: h + 22,
       child: Stack(
         children: [
-          Positioned(
-            left: 0,
-            top: 0,
-            bottom: 0,
-            width: h / 2,
-            child: Container(color: Tokens.amber.withValues(alpha: 0.10)),
-          ),
           Positioned(
             left: 0,
             right: 0,
@@ -49,6 +44,8 @@ class MiniShelf extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
+                PixelLamp(cell: h * 0.04),
+                const SizedBox(width: 10),
                 SolidSpine(bookId: 'onboarding-a', maxHeight: h),
                 const SizedBox(width: 6),
                 SolidSpine(bookId: 'onboarding-b', maxHeight: h),

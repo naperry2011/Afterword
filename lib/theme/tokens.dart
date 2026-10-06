@@ -45,6 +45,9 @@ abstract final class Tokens {
   /// Dashed rule on the cream card.
   static const Color ruleOnCream = Color(0xFFCFC2A8);
 
+  /// The lamp's flat warmth on the room. Same value as the app icon.
+  static const Color lampGlow = Color(0xFF3E333E);
+
   /// Spine palette, cycled deterministically from the book id.
   static const List<Color> spinePalette = [
     rose,
